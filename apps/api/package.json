@@ -1,33 +1,29 @@
 {
-  "name": "@repo/api",
+  "name": "@shipflow/api",
   "version": "1.0.0",
-  "private": true,
+  "description": "ShipFlow AI — Express REST API (Chai-Express pattern)",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "dotenv -- tsx watch ./src/index.ts",
-    "build": "tsup",
-    "lint": "eslint src/*"
-  },
-  "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@swc/core": "^1.15.8",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/node": "^22.15.3",
-    "dotenv-cli": "^11.0.0",
-    "tsup": "^8.5.1",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc --project tsconfig.json",
+    "start": "node dist/server.js",
+    "lint": "eslint src --ext .ts",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/trpc": "workspace:*",
-    "@repo/logger": "workspace:*",
-    "@scalar/express-api-reference": "^0.8.30",
-    "@trpc/server": "^11.8.1",
+    "@shipflow/db": "workspace:*",
+    "better-auth": "^1.2.7",
     "cors": "^2.8.5",
-    "express": "^5.2.1",
-    "trpc-to-openapi": "^3.1.0",
-    "zod": "^4.3.5"
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@shipflow/typescript-config": "workspace:*",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.15.7",
+    "typescript": "^5.7.2"
   }
 }

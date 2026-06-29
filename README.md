@@ -1,135 +1,171 @@
-# Turborepo starter
+# ShipFlow AI — Setup Guide
 
-This Turborepo starter is maintained by the Turborepo core team.
+Read `/ARCHITECTURE.md` first for how the system fits together. This file is
+purely about getting it running locally.
 
-## Using this example
+## 0. Prerequisites
 
-Run the following command:
+- Node.js >= 20
+- pnpm 9.x (`npm install -g pnpm`)
+- A local or hosted PostgreSQL instance
+- [ngrok](https://ngrok.com) (for GitHub/Razorpay webhook delivery in dev)
+- Accounts: Google Cloud (OAuth), GitHub (App + OAuth App), OpenRouter,
+  Pinecone, Razorpay
 
-```sh
-npx create-turbo@latest
+## 1. Install
+
+```bash
+pnpm install
+cp .env.example .env
 ```
 
-## What's inside?
+Fill in `.env` as you complete each section below.
 
-This Turborepo includes the following packages/apps:
+## 2. Database
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```bash
+# point DATABASE_URL at your Postgres instance, then:
+pnpm db:generate   # generates SQL migrations from packages/db/src/schema
+pnpm db:migrate    # applies them
+pnpm db:studio     # optional — browse data via Drizzle Studio
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## 3. ngrok (do this early — you'll need the URL for steps 4 and 7)
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```bash
+ngrok http 3000
 ```
 
-### Develop
+Copy the `https://xxxx.ngrok-free.app` URL. Set `NEXT_PUBLIC_APP_URL` in
+`.env` to this value for any OAuth/webhook testing (switch back to
+`http://localhost:3000` for plain local browsing — or just leave it as the
+ngrok URL throughout dev, since it forwards to localhost:3000 anyway).
 
-To develop all apps and packages, run the following command:
+## 4. Better Auth — Google + GitHub login
 
+**Google:**
+1. [Google Cloud Console](https://console.cloud.google.com) → APIs & Services → Credentials → Create OAuth client ID (Web application).
+2. Authorized redirect URI: `{NEXT_PUBLIC_APP_URL}/api/auth/callback/google`
+3. Set `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
+
+**GitHub (OAuth App — login only, separate from the GitHub App in step 5):**
+1. GitHub → Settings → Developer settings → OAuth Apps → New OAuth App.
+2. Authorization callback URL: `{NEXT_PUBLIC_APP_URL}/api/auth/callback/github`
+3. Set `GITHUB_OAUTH_CLIENT_ID` / `GITHUB_OAUTH_CLIENT_SECRET`.
+
+Generate `BETTER_AUTH_SECRET`: `openssl rand -hex 32`.
+
+## 5. GitHub App — repo access + webhooks
+
+This is a **separate** GitHub App from the OAuth App above — it's what
+installs on repositories, not what users sign in with.
+
+1. GitHub → Settings → Developer settings → GitHub Apps → New GitHub App.
+2. **Homepage URL**: `{NEXT_PUBLIC_APP_URL}`
+3. **Setup URL** (under "Post installation"): `{NEXT_PUBLIC_APP_URL}/api/github/setup` — check "Redirect on update" too.
+4. **Webhook URL**: `{NEXT_PUBLIC_APP_URL}/api/webhooks/github`
+5. **Webhook secret**: generate one, save as `GITHUB_APP_WEBHOOK_SECRET`.
+6. **Permissions** (Repository): Contents (read), Pull requests (read & write), Metadata (read).
+7. **Subscribe to events**: Pull request.
+8. Create the app, then generate a private key (downloads a `.pem`).
+9. Set:
+   - `GITHUB_APP_ID` — from the app's settings page
+   - `GITHUB_APP_PRIVATE_KEY` — paste the full `.pem` contents (multi-line is fine; the code unescapes `\n` automatically, see `lib/github/app.ts`)
+   - `GITHUB_APP_SLUG` — the app's URL slug
+
+Install the app on a test repo from its public page (`github.com/apps/your-app-slug`) to test the flow end to end.
+
+## 6. OpenRouter + Pinecone
+
+1. [OpenRouter](https://openrouter.ai) → API Keys → create one → `OPENROUTER_API_KEY`.
+   **Check current model slugs** at openrouter.ai/models before relying on
+   the defaults in `apps/web/src/lib/ai/models.ts` — they were a reasonable
+   starting point at time of writing but OpenRouter's catalog changes.
+2. [Pinecone](https://www.pinecone.io) → create a project → API key → `PINECONE_API_KEY`.
+3. Create the index (must be **1536 dimensions** to match the embedding
+   model — adjust both together if you change the embedding model):
+
+   ```bash
+   # one-time, via Pinecone's console UI is easiest, or via their API:
+   curl -X POST "https://api.pinecone.io/indexes" \
+     -H "Api-Key: $PINECONE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "name": "shipflow-code-chunks",
+       "dimension": 1536,
+       "metric": "cosine",
+       "spec": { "serverless": { "cloud": "aws", "region": "us-east-1" } }
+     }'
+   ```
+4. Set `PINECONE_INDEX=shipflow-code-chunks`.
+
+## 7. Inngest
+
+```bash
+pnpm inngest:dev
 ```
-cd my-turborepo
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+This runs the Inngest Dev Server (separate terminal, alongside `pnpm dev`)
+and auto-discovers functions from `/api/inngest` on localhost:3000. You can
+watch every workflow run — including each `step.run()` — at
+`http://localhost:8288`.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+For production, get `INNGEST_EVENT_KEY` / `INNGEST_SIGNING_KEY` from the
+[Inngest dashboard](https://app.inngest.com) once you deploy.
+
+## 8. Razorpay
+
+1. [Razorpay Dashboard](https://dashboard.razorpay.com) → Settings → API Keys → generate test keys → `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET`.
+2. Settings → Webhooks → Add New Webhook:
+   - URL: `{NEXT_PUBLIC_APP_URL}/api/webhooks/razorpay`
+   - Secret: generate one → `RAZORPAY_WEBHOOK_SECRET`
+   - Events: `subscription.activated`, `subscription.charged`, `subscription.pending`, `subscription.halted`, `subscription.cancelled`
+3. Subscriptions → Plans → create a "Pro" plan and an "Enterprise" plan → copy their plan IDs into `RAZORPAY_PRO_PLAN_ID` / `RAZORPAY_ENTERPRISE_PLAN_ID`.
+
+## 9. Run it
+
+```bash
+pnpm dev               # Next.js app on :3000
+pnpm inngest:dev        # separate terminal — Inngest Dev Server on :8288
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+Visit `http://localhost:3000` (or your ngrok URL), sign in, create a
+project, connect GitHub, link a repo, and submit a feature request to walk
+the full pipeline.
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+---
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+## Known gaps / follow-ups worth your attention
 
-### Remote Caching
+These are deliberate v1 simplifications, not oversights — flagged so they
+don't surprise you later:
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+1. **PR-to-feature-request linking is convention-based** (`ShipFlow: fr_xxx`
+   in the title/body), not a UI-driven picker. Works, but a "copy this into
+   your PR" button on the task board would close the loop better — natural
+   next addition to `task-board-panel.tsx`.
+2. **Razorpay Checkout's client-side popup isn't wired up.** `billing.createSubscription`
+   returns `{ razorpaySubscriptionId, razorpayKeyId }`; the actual
+   `new window.Razorpay({...}).open()` call (loading their checkout.js
+   script and handling the success callback) is the part still needed in
+   `billing/page.tsx` — same effort as any other Razorpay Checkout
+   integration, just not built out here since it's pure frontend wiring
+   with no architectural decisions left to make.
+3. **Razorpay subscription renewal past `total_count` cycles** isn't
+   automated — see the comment in `server/routers/billing.ts`.
+4. **No Drizzle migration files are checked in** — `pnpm db:generate` creates
+   them fresh from the schema; this is normal for a new project but means
+   the very first migration run is also your first real correctness check
+   on the schema.
+5. **No automated tests.** Given the scope, this was prioritized as a
+   working, reviewed implementation over a tested one — adding integration
+   tests around the state machine (`server/workflows/state-machine.ts`) and
+   the review pipeline would be the highest-leverage first tests to write.
+6. **Model slugs in `lib/ai/models.ts` need a live check** against
+   OpenRouter's current catalog before production use (flagged inline in
+   that file too).
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+## Project structure reference
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+See `/ARCHITECTURE.md` Section 1 for the full directory layout and Section
+10 (build passes) for what was built when.
