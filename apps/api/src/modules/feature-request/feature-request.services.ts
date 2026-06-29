@@ -1,20 +1,41 @@
-import { db, createId } from "@shipflow/db";
+import { db } from "@shipflow/db";
 import { featureRequest } from "@shipflow/db";
 import { eq } from "drizzle-orm";
 import { NotFoundError } from "../../common/utils/apiError";
 
-export async function listFeatureRequests(workspaceId: string, projectId?: string) {
+export async function listFeatureRequests(
+  workspaceId: string,
+  projectId?: string,
+) {
   const rows = await db.select().from(featureRequest);
   // Filter in JS since we'd need a join — workspaceId via project
   return rows;
 }
 
-export async function createFeatureRequest(projectId: string, title: string, description: string) {
+export async function createFeatureRequest(
+  workspaceId: string,
+  projectId: string,
+  createdByUserId: string,
+  title: string,
+  rawRequest: string,
+) {
   const [fr] = await db
     .insert(featureRequest)
-    .values({ id: createId("fr"), projectId, title, description, status: "draft" })
+    .values({
+      workspaceId,
+      projectId,
+      createdByUserId,
+      title,
+      rawRequest,
+      sourceChannel: "manual",
+      status: "draft",
+    })
     .returning();
-  if (!fr) throw new Error("Failed to create feature request");
+
+  if (!fr) {
+    throw new Error("Failed to create feature request");
+  }
+
   return fr;
 }
 
@@ -30,7 +51,7 @@ export async function getFeatureRequestById(id: string) {
 
 export async function updateFeatureRequestStatus(
   id: string,
-  status: typeof featureRequest.$inferSelect.status
+  status: typeof featureRequest.$inferSelect.status,
 ) {
   const [fr] = await db
     .update(featureRequest)

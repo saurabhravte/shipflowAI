@@ -7,13 +7,22 @@ export async function listProjects(workspaceId: string) {
   return db.select().from(project).where(eq(project.workspaceId, workspaceId));
 }
 
-export async function createProject(workspaceId: string, name: string, description?: string) {
-  const slug = name.toLowerCase().replace(/[^a-z0-9]/g, "-");
+export async function createProject(
+  workspaceId: string,
+  name: string,
+  description?: string,
+) {
   const [p] = await db
     .insert(project)
-    .values({ id: createId("proj"), workspaceId, name, slug, description })
+    .values({
+      workspaceId,
+      name,
+      description,
+    })
     .returning();
+
   if (!p) throw new Error("Failed to create project");
+
   return p;
 }
 
@@ -27,9 +36,17 @@ export async function getProjectById(id: string, workspaceId: string) {
   return p;
 }
 
-export async function updateProject(id: string, workspaceId: string, data: { name?: string; description?: string }) {
+export async function updateProject(
+  id: string,
+  workspaceId: string,
+  data: { name?: string; description?: string },
+) {
   await getProjectById(id, workspaceId); // guard
-  const [p] = await db.update(project).set(data).where(eq(project.id, id)).returning();
+  const [p] = await db
+    .update(project)
+    .set(data)
+    .where(eq(project.id, id))
+    .returning();
   return p;
 }
 
