@@ -6,8 +6,6 @@ import { register, getMe } from "./auth.controller";
 
 export const authRoutes = Router();
 
-// POST /api/auth/register
 authRoutes.post("/register", validate(RegisterDto), register);
 
-// GET /api/auth/me  (requires valid JWT)
 authRoutes.get("/me", requireAuth, getMe);
