@@ -61,7 +61,7 @@ export function PullRequestPanel({
           number={pr.number}
           url={pr.url}
           state={pr.state}
-          onResolve={(findingId, status) => {
+          onResolve={(findingId: string, status: "resolved" | "dismissed") => {
             resolveFinding.mutate(
               { findingId, status },
               {
@@ -93,7 +93,7 @@ function PullRequestCard({
   number: number;
   url: string;
   state: string;
-  onResolve: ({ findingId: _findingId, status: _status }) => void;
+  onResolve: (findingId: string, status: "resolved" | "dismissed") => void;
 }) {
   const trpc = useTRPC();
   const { data: runs } = useQuery(
@@ -121,10 +121,10 @@ function PullRequestCard({
           <Badge
             variant={
               state === "merged"
-                ? "success"
+                ? "default"
                 : state === "closed"
                   ? "outline"
-                  : "default"
+                  : "secondary"
             }
           >
             {state}

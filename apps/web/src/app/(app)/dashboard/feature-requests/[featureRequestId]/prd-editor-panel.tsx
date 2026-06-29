@@ -38,7 +38,7 @@ function StringListEditor({
 }: {
   label: string;
   values: string[];
-  onChange: () => void;
+  onChange: (values: string[]) => void;
   placeholder: string;
 }) {
   return (
