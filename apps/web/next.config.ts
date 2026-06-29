@@ -1,3 +1,5 @@
+import type { NextConfig } from "next";
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   transpilePackages: ["@shipflow/db"],
@@ -10,3 +12,5 @@ const nextConfig: NextConfig = {
     },
   },
 };
+
+export default nextConfig;

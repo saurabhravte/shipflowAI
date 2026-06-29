@@ -33,31 +33,44 @@ export async function GET(req: Request) {
       a(e(m.workspaceId, workspaceId), e(m.userId, authSession.user.id)),
   });
   if (!membership) {
-    return NextResponse.redirect(new URL("/dashboard?error=forbidden", req.url));
+    return NextResponse.redirect(
+      new URL("/dashboard?error=forbidden", req.url),
+    );
   }
 
   const installationIdNum = Number(installationId);
   const octokit = await getInstallationOctokit(installationIdNum);
-  const { data: installation } = await octokit.request("GET /app/installations/{installation_id}", {
-    installation_id: installationIdNum,
-  });
+  const { data: installation } = await octokit.request(
+    "GET /app/installations/{installation_id}",
+    {
+      installation_id: installationIdNum,
+    },
+  );
 
   await db
     .insert(githubInstallation)
     .values({
       workspaceId,
       installationId: installationIdNum,
-      accountLogin: installation.account?.login ?? "unknown",
+      accountLogin:
+        installation.account && "login" in installation.account
+          ? installation.account.login
+          : "unknown",
       accountType: installation.target_type,
     })
     .onConflictDoUpdate({
       target: [githubInstallation.workspaceId],
       set: {
         installationId: installationIdNum,
-        accountLogin: installation.account?.login ?? "unknown",
+        accountLogin:
+          installation.account && "login" in installation.account
+            ? installation.account.login
+            : "unknown",
         accountType: installation.target_type,
       },
     });
 
-  return NextResponse.redirect(new URL("/dashboard/settings/github?connected=true", req.url));
+  return NextResponse.redirect(
+    new URL("/dashboard/settings/github?connected=true", req.url),
+  );
 }

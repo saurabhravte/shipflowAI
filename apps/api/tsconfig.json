@@ -1,5 +1,5 @@
 {
-  "extends": "@shipflow/typescript-config/base.json",
+  "extends": "../../packages/typescript-config/nextjs.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
