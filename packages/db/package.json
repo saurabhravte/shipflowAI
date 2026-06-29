@@ -21,9 +21,10 @@
   },
   "devDependencies": {
     "@shipflow/typescript-config": "workspace:*",
-    "drizzle-kit": "^0.30.0",
-    "@types/pg": "^8.11.0",
     "@types/node": "^20.14.0",
+    "@types/pg": "^8.11.0",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.30.0",
     "typescript": "^5.7.0"
   }
 }
