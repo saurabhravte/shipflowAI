@@ -8,7 +8,7 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
 
-  const workspaceId = authSession.session.activeWorkspaceId;
+  const workspaceId = (authSession.session as any).activeWorkspaceId;
   if (!workspaceId) {
     return NextResponse.redirect(
       new URL("/dashboard?error=no-active-workspace", req.url),

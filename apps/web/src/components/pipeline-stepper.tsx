@@ -1,5 +1,15 @@
 import { cn } from "@/lib/utils";
-import { Check, Sparkles, FileText, ListTree, Code2, ShieldCheck, Wrench, UserCheck, Rocket, XCircle } from "lucide-react";
+import {
+  Check,
+  Sparkles,
+  FileText,
+  ListTree,
+  Code2,
+  ShieldCheck,
+  UserCheck,
+  Rocket,
+  XCircle,
+} from "lucide-react";
 
 type Status =
   | "draft"
@@ -22,7 +32,11 @@ type Status =
  * stays quiet and functional. Maps directly to
  * server/workflows/state-machine.ts; the two files should always agree.
  */
-const STAGES: { key: Status; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+const STAGES: {
+  key: Status;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}[] = [
   { key: "draft", label: "Request", icon: Sparkles },
   { key: "clarifying", label: "Clarify", icon: Sparkles },
   { key: "prd_review", label: "PRD", icon: FileText },
@@ -61,9 +75,12 @@ export function PipelineStepper({ status }: { status: Status }) {
   }
 
   const currentIndex = STAGE_INDEX[status];
-  const isActivelyWorking = ["clarifying", "prd_generating", "tasks_generating", "ai_reviewing"].includes(
-    status,
-  );
+  const isActivelyWorking = [
+    "clarifying",
+    "prd_generating",
+    "tasks_generating",
+    "ai_reviewing",
+  ].includes(status);
   const isFixNeeded = status === "fix_needed";
 
   return (
@@ -74,7 +91,10 @@ export function PipelineStepper({ status }: { status: Status }) {
         const Icon = stage.icon;
 
         return (
-          <li key={stage.key} className="flex flex-1 items-center last:flex-none">
+          <li
+            key={stage.key}
+            className="flex flex-1 items-center last:flex-none"
+          >
             <div className="flex flex-col items-center gap-1.5">
               <div
                 className={cn(
@@ -83,15 +103,24 @@ export function PipelineStepper({ status }: { status: Status }) {
                   isCurrent &&
                     !isFixNeeded &&
                     "border-accent bg-accent text-accent-foreground",
-                  isCurrent && isFixNeeded && "border-warning bg-warning text-warning-foreground",
-                  !isDone && !isCurrent && "border-border bg-muted text-muted-foreground",
+                  isCurrent &&
+                    isFixNeeded &&
+                    "border-warning bg-warning text-warning-foreground",
+                  !isDone &&
+                    !isCurrent &&
+                    "border-border bg-muted text-muted-foreground",
                 )}
                 aria-current={isCurrent ? "step" : undefined}
               >
                 {isDone ? (
                   <Check className="size-4" />
                 ) : (
-                  <Icon className={cn("size-4", isCurrent && isActivelyWorking && "animate-pulse")} />
+                  <Icon
+                    className={cn(
+                      "size-4",
+                      isCurrent && isActivelyWorking && "animate-pulse",
+                    )}
+                  />
                 )}
               </div>
               <span

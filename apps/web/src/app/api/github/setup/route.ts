@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
-import { db, githubInstallation, member } from "@shipflow/db";
+
+import { db, githubInstallation } from "@shipflow/db";
 import { getServerSession } from "@/server/auth/session";
 import { getInstallationOctokit } from "@/lib/github/app";
 

@@ -10,7 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
 type Prd = {
   problemStatement: string;
@@ -31,7 +38,7 @@ function StringListEditor({
 }: {
   label: string;
   values: string[];
-  onChange: (next: string[]) => void;
+  onChange: () => void;
   placeholder: string;
 }) {
   return (
@@ -42,21 +49,38 @@ function StringListEditor({
           <Input
             value={v}
             placeholder={placeholder}
-            onChange={(e) => onChange(values.map((x, idx) => (idx === i ? e.target.value : x)))}
+            onChange={(e) =>
+              onChange(values.map((x, idx) => (idx === i ? e.target.value : x)))
+            }
           />
-          <Button variant="ghost" size="icon" onClick={() => onChange(values.filter((_, idx) => idx !== i))}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onChange(values.filter((_, idx) => idx !== i))}
+          >
             <X className="size-4" />
           </Button>
         </div>
       ))}
-      <Button variant="outline" size="sm" className="w-fit" onClick={() => onChange([...values, ""])}>
+      <Button
+        variant="outline"
+        size="sm"
+        className="w-fit"
+        onClick={() => onChange([...values, ""])}
+      >
         <Plus className="size-3.5" /> Add
       </Button>
     </div>
   );
 }
 
-export function PrdEditorPanel({ featureRequestId, initialPrd }: { featureRequestId: string; initialPrd: Prd }) {
+export function PrdEditorPanel({
+  featureRequestId,
+  initialPrd,
+}: {
+  featureRequestId: string;
+  initialPrd: Prd;
+}) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const [prd, setPrd] = useState(initialPrd);
@@ -90,7 +114,9 @@ export function PrdEditorPanel({ featureRequestId, initialPrd }: { featureReques
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>Product Requirements Document</CardTitle>
-            <CardDescription>AI-generated, human-editable. Approve to move into planning.</CardDescription>
+            <CardDescription>
+              AI-generated, human-editable. Approve to move into planning.
+            </CardDescription>
           </div>
           {isApproved && (
             <span className="flex items-center gap-1.5 text-sm font-medium text-success">
@@ -105,7 +131,9 @@ export function PrdEditorPanel({ featureRequestId, initialPrd }: { featureReques
           <Textarea
             rows={3}
             value={prd.problemStatement}
-            onChange={(e) => setPrd({ ...prd, problemStatement: e.target.value })}
+            onChange={(e) =>
+              setPrd({ ...prd, problemStatement: e.target.value })
+            }
             disabled={isApproved}
           />
         </div>
@@ -132,7 +160,10 @@ export function PrdEditorPanel({ featureRequestId, initialPrd }: { featureReques
         <div className="flex flex-col gap-2">
           <Label>User stories</Label>
           {prd.userStories.map((s, i) => (
-            <div key={s.id} className="grid grid-cols-1 gap-2 rounded-md border p-3 sm:grid-cols-3">
+            <div
+              key={s.id}
+              className="grid grid-cols-1 gap-2 rounded-md border p-3 sm:grid-cols-3"
+            >
               <Input
                 placeholder="As a…"
                 value={s.asA}
@@ -140,7 +171,9 @@ export function PrdEditorPanel({ featureRequestId, initialPrd }: { featureReques
                 onChange={(e) =>
                   setPrd({
                     ...prd,
-                    userStories: prd.userStories.map((x, idx) => (idx === i ? { ...x, asA: e.target.value } : x)),
+                    userStories: prd.userStories.map((x, idx) =>
+                      idx === i ? { ...x, asA: e.target.value } : x,
+                    ),
                   })
                 }
               />
@@ -151,7 +184,9 @@ export function PrdEditorPanel({ featureRequestId, initialPrd }: { featureReques
                 onChange={(e) =>
                   setPrd({
                     ...prd,
-                    userStories: prd.userStories.map((x, idx) => (idx === i ? { ...x, iWant: e.target.value } : x)),
+                    userStories: prd.userStories.map((x, idx) =>
+                      idx === i ? { ...x, iWant: e.target.value } : x,
+                    ),
                   })
                 }
               />
@@ -162,7 +197,9 @@ export function PrdEditorPanel({ featureRequestId, initialPrd }: { featureReques
                 onChange={(e) =>
                   setPrd({
                     ...prd,
-                    userStories: prd.userStories.map((x, idx) => (idx === i ? { ...x, soThat: e.target.value } : x)),
+                    userStories: prd.userStories.map((x, idx) =>
+                      idx === i ? { ...x, soThat: e.target.value } : x,
+                    ),
                   })
                 }
               />

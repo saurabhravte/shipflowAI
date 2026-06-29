@@ -7,9 +7,19 @@ import { useTRPC } from "@/lib/trpc";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 
-export function PullRequestPanel({ featureRequestId }: { featureRequestId: string }) {
+export function PullRequestPanel({
+  featureRequestId,
+}: {
+  featureRequestId: string;
+}) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const { data: pullRequests, isLoading } = useQuery(
@@ -22,14 +32,19 @@ export function PullRequestPanel({ featureRequestId }: { featureRequestId: strin
     }),
   );
 
-  if (isLoading) return <p className="text-sm text-muted-foreground">Loading pull requests…</p>;
+  if (isLoading)
+    return (
+      <p className="text-sm text-muted-foreground">Loading pull requests…</p>
+    );
 
   if (!pullRequests || pullRequests.length === 0) {
     return (
       <Card className="border-dashed">
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
           No pull requests linked yet. Open a PR with{" "}
-          <code className="font-data rounded bg-muted px-1.5 py-0.5">ShipFlow: {featureRequestId}</code>{" "}
+          <code className="font-data rounded bg-muted px-1.5 py-0.5">
+            ShipFlow: {featureRequestId}
+          </code>{" "}
           in the title or description to link it automatically.
         </CardContent>
       </Card>
@@ -52,7 +67,9 @@ export function PullRequestPanel({ featureRequestId }: { featureRequestId: strin
               {
                 onSuccess: () =>
                   queryClient.invalidateQueries({
-                    queryKey: trpc.review.listRunsForPullRequest.queryKey({ pullRequestId: pr.id }),
+                    queryKey: trpc.review.listRunsForPullRequest.queryKey({
+                      pullRequestId: pr.id,
+                    }),
                   }),
               },
             );
@@ -76,10 +93,12 @@ function PullRequestCard({
   number: number;
   url: string;
   state: string;
-  onResolve: (findingId: string, status: "resolved" | "dismissed") => void;
+  onResolve: ({ findingId: _findingId, status: _status }) => void;
 }) {
   const trpc = useTRPC();
-  const { data: runs } = useQuery(trpc.review.listRunsForPullRequest.queryOptions({ pullRequestId }));
+  const { data: runs } = useQuery(
+    trpc.review.listRunsForPullRequest.queryOptions({ pullRequestId }),
+  );
 
   return (
     <Card>
@@ -88,13 +107,26 @@ function PullRequestCard({
           <div>
             <CardTitle className="flex items-center gap-2">
               #{number} {title}
-              <a href={url} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground">
+              <a
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-muted-foreground hover:text-foreground"
+              >
                 <ExternalLink className="size-3.5" />
               </a>
             </CardTitle>
             <CardDescription>{runs?.length ?? 0} review run(s)</CardDescription>
           </div>
-          <Badge variant={state === "merged" ? "success" : state === "closed" ? "outline" : "default"}>
+          <Badge
+            variant={
+              state === "merged"
+                ? "success"
+                : state === "closed"
+                  ? "outline"
+                  : "default"
+            }
+          >
             {state}
           </Badge>
         </div>
@@ -103,7 +135,9 @@ function PullRequestCard({
         {runs?.map((run, i) => (
           <div key={run.id} className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
-              {run.findings.some((f) => f.severity === "blocking" && f.status === "open") ? (
+              {run.findings.some(
+                (f) => f.severity === "blocking" && f.status === "open",
+              ) ? (
                 <ShieldAlert className="size-4 text-destructive" />
               ) : (
                 <ShieldCheck className="size-4 text-success" />
@@ -111,19 +145,38 @@ function PullRequestCard({
               <span className="text-sm font-medium">
                 Review run {runs.length - i} · {run.status}
               </span>
-              <span className="font-data text-xs text-muted-foreground">{run.triggeredBySha.slice(0, 7)}</span>
+              <span className="font-data text-xs text-muted-foreground">
+                {run.triggeredBySha.slice(0, 7)}
+              </span>
             </div>
-            {run.summary && <p className="pl-6 text-sm text-muted-foreground">{run.summary}</p>}
+            {run.summary && (
+              <p className="pl-6 text-sm text-muted-foreground">
+                {run.summary}
+              </p>
+            )}
             <div className="flex flex-col gap-2 pl-6">
               {run.findings.map((f) => (
-                <div key={f.id} className="flex items-start justify-between gap-3 rounded-md border p-3">
+                <div
+                  key={f.id}
+                  className="flex items-start justify-between gap-3 rounded-md border p-3"
+                >
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                      <Badge variant={f.severity === "blocking" ? "destructive" : "secondary"}>
+                      <Badge
+                        variant={
+                          f.severity === "blocking"
+                            ? "destructive"
+                            : "secondary"
+                        }
+                      >
                         {f.severity === "blocking" ? "Blocking" : "Suggestion"}
                       </Badge>
-                      <Badge variant="outline">{f.category.replace("_", " ")}</Badge>
-                      {f.status !== "open" && <Badge variant="outline">{f.status}</Badge>}
+                      <Badge variant="outline">
+                        {f.category.replace("_", " ")}
+                      </Badge>
+                      {f.status !== "open" && (
+                        <Badge variant="outline">{f.status}</Badge>
+                      )}
                     </div>
                     <p className="text-sm">{f.message}</p>
                     {f.filePath && (
@@ -135,10 +188,20 @@ function PullRequestCard({
                   </div>
                   {f.status === "open" && (
                     <div className="flex shrink-0 gap-1">
-                      <Button variant="ghost" size="icon" className="size-7" onClick={() => onResolve(f.id, "resolved")}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-7"
+                        onClick={() => onResolve(f.id, "resolved")}
+                      >
                         <Check className="size-3.5" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="size-7" onClick={() => onResolve(f.id, "dismissed")}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-7"
+                        onClick={() => onResolve(f.id, "dismissed")}
+                      >
                         <X className="size-3.5" />
                       </Button>
                     </div>

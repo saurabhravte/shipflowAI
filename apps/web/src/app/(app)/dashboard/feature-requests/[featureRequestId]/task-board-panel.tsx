@@ -6,7 +6,13 @@ import { ArrowRight } from "lucide-react";
 import { useTRPC } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 
 const COLUMNS = [
   { key: "backlog", label: "Backlog" },
@@ -23,15 +29,25 @@ const PRIORITY_VARIANT = {
   urgent: "destructive",
 } as const;
 
-export function TaskBoardPanel({ featureRequestId, canApprovePlan }: { featureRequestId: string; canApprovePlan: boolean }) {
+export function TaskBoardPanel({
+  featureRequestId,
+  canApprovePlan,
+}: {
+  featureRequestId: string;
+  canApprovePlan: boolean;
+}) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const { data: tasks, isLoading } = useQuery(trpc.task.list.queryOptions({ featureRequestId }));
+  const { data: tasks, isLoading } = useQuery(
+    trpc.task.list.queryOptions({ featureRequestId }),
+  );
 
   const move = useMutation(
     trpc.task.move.mutationOptions({
       onSuccess: () =>
-        queryClient.invalidateQueries({ queryKey: trpc.task.list.queryKey({ featureRequestId }) }),
+        queryClient.invalidateQueries({
+          queryKey: trpc.task.list.queryKey({ featureRequestId }),
+        }),
       onError: (err) => toast.error(err.message),
     }),
   );
@@ -59,17 +75,24 @@ export function TaskBoardPanel({ featureRequestId, canApprovePlan }: { featureRe
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>Engineering tasks</CardTitle>
-            <CardDescription>AI-generated breakdown of the approved PRD.</CardDescription>
+            <CardDescription>
+              AI-generated breakdown of the approved PRD.
+            </CardDescription>
           </div>
           {canApprovePlan && (
-            <Button onClick={() => approvePlan.mutate({ featureRequestId })} disabled={approvePlan.isPending}>
+            <Button
+              onClick={() => approvePlan.mutate({ featureRequestId })}
+              disabled={approvePlan.isPending}
+            >
               {approvePlan.isPending ? "Approving…" : "Approve plan"}
             </Button>
           )}
         </div>
       </CardHeader>
       <CardContent>
-        {isLoading && <p className="text-sm text-muted-foreground">Loading tasks…</p>}
+        {isLoading && (
+          <p className="text-sm text-muted-foreground">Loading tasks…</p>
+        )}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
           {COLUMNS.map((col) => (
             <div key={col.key} className="flex flex-col gap-2">
@@ -86,9 +109,13 @@ export function TaskBoardPanel({ featureRequestId, canApprovePlan }: { featureRe
                   ?.filter((t) => t.status === col.key)
                   .map((t) => (
                     <Card key={t.id} className="gap-2 p-3">
-                      <p className="text-sm font-medium leading-tight">{t.title}</p>
+                      <p className="text-sm font-medium leading-tight">
+                        {t.title}
+                      </p>
                       <div className="flex items-center justify-between">
-                        <Badge variant={PRIORITY_VARIANT[t.priority]}>{t.priority}</Badge>
+                        <Badge variant={PRIORITY_VARIANT[t.priority]}>
+                          {t.priority}
+                        </Badge>
                         {col.key !== "done" && (
                           <Button
                             variant="ghost"

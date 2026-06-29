@@ -2,15 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FolderKanban, GitPullRequest, Settings, Github, CreditCard } from "lucide-react";
+import {
+  FolderKanban,
+  GitPullRequest,
+  Settings,
+  Github,
+  CreditCard,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { signOut, useSession } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Projects", icon: FolderKanban },
-  { href: "/dashboard/pull-requests", label: "Pull Requests", icon: GitPullRequest },
+  {
+    href: "/dashboard/pull-requests",
+    label: "Pull Requests",
+    icon: GitPullRequest,
+  },
   { href: "/dashboard/settings/github", label: "GitHub", icon: Github },
   { href: "/dashboard/settings/billing", label: "Billing", icon: CreditCard },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
@@ -31,7 +40,8 @@ export function AppSidebar() {
 
       <nav className="flex flex-1 flex-col gap-0.5 p-2">
         {NAV_ITEMS.map((item) => {
-          const active = pathname === item.href || pathname.startsWith(item.href + "/");
+          const active =
+            pathname === item.href || pathname.startsWith(item.href + "/");
           const Icon = item.icon;
           return (
             <Link
@@ -53,7 +63,9 @@ export function AppSidebar() {
 
       <div className="flex items-center justify-between gap-2 border-t p-3">
         <div className="flex min-w-0 flex-col">
-          <span className="truncate text-sm font-medium">{session?.user.name ?? "—"}</span>
+          <span className="truncate text-sm font-medium">
+            {session?.user.name ?? "—"}
+          </span>
           <button
             onClick={() => signOut()}
             className="text-left text-xs text-muted-foreground hover:text-foreground"

@@ -1,6 +1,6 @@
 import { generateObject } from "ai";
 import { eq } from "drizzle-orm";
-import { db, featureRequest, prd, task } from "@shipflow/db";
+import { db, prd, task } from "@shipflow/db";
 import { inngest } from "../client";
 import { models } from "@/lib/ai/models";
 import { taskGenerationSchema } from "@/lib/ai/schemas";
@@ -17,7 +17,8 @@ export const generateTasks = inngest.createFunction(
       const row = await db.query.prd.findFirst({
         where: eq(prd.featureRequestId, featureRequestId),
       });
-      if (!row) throw new Error(`PRD for FeatureRequest ${featureRequestId} not found`);
+      if (!row)
+        throw new Error(`PRD for FeatureRequest ${featureRequestId} not found`);
       return row;
     });
 
@@ -27,7 +28,9 @@ export const generateTasks = inngest.createFunction(
         schema: taskGenerationSchema,
         prompt: taskGenerationPrompt({
           prdSummary: prdRow.problemStatement,
-          acceptanceCriteria: prdRow.acceptanceCriteria.map((c) => c.description),
+          acceptanceCriteria: prdRow.acceptanceCriteria.map(
+            (c) => c.description,
+          ),
         }),
       });
       return object;

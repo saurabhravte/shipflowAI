@@ -13,7 +13,8 @@ const t = initTRPC.context<TRPCContext>().create({
       ...shape,
       data: {
         ...shape.data,
-        zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
+        zodError:
+          error.cause instanceof ZodError ? error.cause.flatten() : null,
       },
     };
   },
@@ -62,13 +63,17 @@ const isWorkspaceMember = middleware(async ({ ctx, next, getRawInput }) => {
   }
 
   const rawInput = (await getRawInput().catch(() => undefined)) as
-    | { workspaceId?: unknown }
-    | undefined;
+    { workspaceId?: unknown } | undefined;
 
   const requestedWorkspaceId =
-    typeof rawInput?.workspaceId === "string" ? rawInput.workspaceId : undefined;
+    typeof rawInput?.workspaceId === "string"
+      ? rawInput.workspaceId
+      : undefined;
 
-  const workspaceId = requestedWorkspaceId ?? ctx.session?.activeWorkspaceId ?? undefined;
+  const workspaceId =
+    requestedWorkspaceId ??
+    (ctx.session as any)?.activeWorkspaceId ??
+    undefined;
 
   if (!workspaceId) {
     throw new TRPCError({
@@ -78,7 +83,10 @@ const isWorkspaceMember = middleware(async ({ ctx, next, getRawInput }) => {
   }
 
   const membership = await ctx.db.query.member.findFirst({
-    where: and(eq(member.workspaceId, workspaceId), eq(member.userId, ctx.user.id)),
+    where: and(
+      eq(member.workspaceId, workspaceId),
+      eq(member.userId, ctx.user.id),
+    ),
   });
 
   if (!membership) {
@@ -138,7 +146,10 @@ export function requireRole(...roles: Array<"owner" | "admin" | "member">) {
       });
     }
     if (!roles.includes(ctx.membership.role)) {
-      throw new TRPCError({ code: "FORBIDDEN", message: "Insufficient role for this action." });
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Insufficient role for this action.",
+      });
     }
     return next({ ctx });
   });
