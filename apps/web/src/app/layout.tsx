@@ -21,11 +21,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "ShipFlow AI — Ship, reviewed.",
+    default: "ShipFlow AI — Ship reviewed. Review, instantly.",
     template: "%s · ShipFlow AI",
   },
   description:
-    "AI code review that reads your whole repo, catches real bugs, and drives every feature request from request to merged PR. Bring your own API key.",
+    "Ship reviewed. Review, instantly. ShipFlow AI drives every feature from request to merged PR — AI reviews the code, humans approve the release.",
   icons: { icon: "/logo.png" },
 };
 

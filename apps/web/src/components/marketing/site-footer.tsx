@@ -4,6 +4,7 @@ import { Logo } from "@/components/logo";
 
 const NAV_LINKS: { label: string; href: string }[] = [
   { label: "Features", href: "/#features" },
+  { label: "Core loop", href: "/#loop" },
   { label: "How it works", href: "/#how" },
   { label: "Pricing", href: "/#pricing" },
   { label: "FAQ", href: "/#faq" },

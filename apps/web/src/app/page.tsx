@@ -17,6 +17,7 @@ import {
 import { SiteHeader } from "@/components/marketing/site-header";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { PipelineFlow } from "@/components/marketing/pipeline-flow";
+import { DeliveryLoop } from "@/components/marketing/delivery-loop";
 import { Pricing } from "@/components/marketing/pricing";
 import { Faq } from "@/components/marketing/faq";
 import { Button } from "@/components/ui/button";
@@ -96,7 +97,7 @@ export default function LandingPage() {
         <div className="pointer-events-none absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_60%,transparent_100%)]" />
         <div className="pointer-events-none absolute left-1/2 top-[-12rem] h-[34rem] w-[60rem] -translate-x-1/2 rounded-full opacity-40 blur-3xl aurora-bg" />
 
-        <div className="relative mx-auto max-w-7xl px-5 pb-20 pt-20 lg:px-8 lg:pt-28">
+        <div className="relative mx-auto max-w-7xl px-5 pb-20 pt-12 lg:px-8 lg:pt-20">
           <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
             <Link
               href="/docs"
@@ -111,10 +112,13 @@ export default function LandingPage() {
               Ship <span className="text-gradient-brand">reviewed.</span>
             </h1>
 
+            <p className="font-display mt-3 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+              Review, <span className="text-gradient-brand">instantly</span>
+            </p>
+
             <p className="mt-6 max-w-xl text-balance text-lg text-muted-foreground">
-              ShipFlow AI turns a raw feature request into a reviewed, merged
-              pull request — with AI doing the review and humans doing the
-              deciding.
+              From raw request to merged PR — AI reviews the code, humans approve
+              the release.
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
@@ -193,8 +197,29 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ───────────────────────── Core loop (5 phases) ───────────────────────── */}
+      <section id="loop" className="relative scroll-mt-24 border-y border-border/60 bg-card/20 py-24">
+        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <Badge variant="brand" className="mb-4">
+              <Workflow className="size-3" /> Core loop
+            </Badge>
+            <h2 className="font-display text-4xl font-bold tracking-tight sm:text-5xl">
+              Request to production —{" "}
+              <span className="text-gradient-brand">one pipeline</span>
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Five phases. One observable loop. Click a phase or watch it cycle.
+            </p>
+          </div>
+          <div className="mt-14">
+            <DeliveryLoop />
+          </div>
+        </div>
+      </section>
+
       {/* ───────────────────────── How it works ───────────────────────── */}
-      <section id="how" className="relative scroll-mt-20 border-y border-border/60 bg-card/20 py-24">
+      <section id="how" className="relative scroll-mt-24 py-24">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <Badge variant="brand" className="mb-4">
@@ -380,8 +405,35 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ───────────────────────── Final CTA ───────────────────────── */}
+      <section className="px-5 py-24 lg:px-8">
+        <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[var(--radius-2xl)] border border-border/70 bg-card/50 px-8 py-16 text-center sm:px-12">
+          <div className="pointer-events-none absolute inset-0 aurora-bg opacity-50" />
+          <div className="relative">
+            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
+              Ready to ship{" "}
+              <span className="text-gradient-brand">reviewed?</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-md text-muted-foreground">
+              Connect GitHub, drop in a feature request, and let ShipFlow run
+              the loop — review, instantly.
+            </p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Button asChild size="lg">
+                <Link href="/sign-up">
+                  Start free <ArrowRight />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="/docs/setup">Setup in 10 min</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ───────────────────────── FAQ ───────────────────────── */}
-      <section id="faq" className="scroll-mt-20 border-t border-border/60 bg-card/20 py-24">
+      <section id="faq" className="scroll-mt-24 border-t border-border/60 bg-card/20 py-24">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="mx-auto mb-12 max-w-2xl text-center">
             <Badge variant="brand" className="mb-4">
