@@ -17,25 +17,24 @@
 */
 
 :root {
-  /* Light mode — warm off-white canvas, near-black ink */
-  --background: oklch(0.992 0.004 83);
-  --foreground: oklch(0.205 0.004 83);
+  /* Light mode — warm cream canvas (easy on the eyes), soft ink */
+  --background: oklch(0.978 0.008 88);
+  --foreground: oklch(0.22 0.006 88);
 
-  --card: oklch(1 0.002 83);
-  --card-foreground: oklch(0.205 0.004 83);
-  --popover: oklch(1 0.002 83);
-  --popover-foreground: oklch(0.205 0.004 83);
+  --card: oklch(0.992 0.006 88);
+  --card-foreground: oklch(0.22 0.006 88);
+  --popover: oklch(0.995 0.005 88);
+  --popover-foreground: oklch(0.22 0.006 88);
 
-  --border: oklch(0.9 0.004 83);
-  --input: oklch(0.9 0.004 83);
-  --muted: oklch(0.965 0.004 83);
-  --muted-foreground: oklch(0.5 0.005 83);
-  --secondary: oklch(0.965 0.004 83);
-  --secondary-foreground: oklch(0.25 0.004 83);
+  --border: oklch(0.9 0.008 88);
+  --input: oklch(0.91 0.008 88);
+  --muted: oklch(0.955 0.009 88);
+  --muted-foreground: oklch(0.48 0.01 88);
+  --secondary: oklch(0.948 0.01 88);
+  --secondary-foreground: oklch(0.28 0.006 88);
 
-  /* Monochrome primary keeps every button the same the whole app over. */
-  --primary: oklch(0.22 0.004 83);
-  --primary-foreground: oklch(0.985 0.004 83);
+  --primary: oklch(0.58 0.18 245);
+  --primary-foreground: oklch(0.99 0.01 245);
 
   /* The single vibrant hue: a crisp blue (no purple/indigo). */
   --accent: oklch(0.58 0.18 245);
@@ -227,6 +226,10 @@
 @keyframes rise {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
+}
+@keyframes canvas-text-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 @layer base {

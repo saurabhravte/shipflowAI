@@ -1,14 +1,10 @@
 import { z } from "zod";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { subscription, usageRecord } from "@shipflow/db";
+import { subscription } from "@shipflow/db";
 import { workspaceProcedure, router, requireRole } from "../trpc/trpc";
 import { getRazorpay, PLANS, type PlanKey } from "@/lib/billing/razorpay";
-
-function currentPeriodKey(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-}
+import { getUsageSnapshot } from "@/lib/billing/usage";
 
 export const billingRouter = router({
   current: workspaceProcedure.query(async ({ ctx }) => {
@@ -16,23 +12,14 @@ export const billingRouter = router({
       where: eq(subscription.workspaceId, ctx.workspaceId),
     });
 
-    const usage = await ctx.db.query.usageRecord.findFirst({
-      where: and(
-        eq(usageRecord.workspaceId, ctx.workspaceId),
-        eq(usageRecord.periodKey, currentPeriodKey()),
-      ),
-    });
-
-    const planKey: PlanKey = (sub?.plan as PlanKey) ?? "free";
+    const snapshot = await getUsageSnapshot(ctx.workspaceId);
+    const planKey: PlanKey = (sub?.plan as PlanKey) ?? snapshot.plan;
 
     return {
       plan: planKey,
       status: sub?.status ?? "active",
       limits: PLANS[planKey].limits,
-      usage: {
-        aiReviewsUsed: usage?.aiReviewsUsed ?? 0,
-        prdGenerationsUsed: usage?.prdGenerationsUsed ?? 0,
-      },
+      usage: snapshot.usage,
       currentPeriodEnd: sub?.currentPeriodEnd ?? null,
     };
   }),

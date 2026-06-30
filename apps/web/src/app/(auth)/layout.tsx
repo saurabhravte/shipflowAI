@@ -33,7 +33,7 @@ export default async function AuthLayout({
   }
 
   return (
-    <div className="dark grid min-h-screen bg-background text-foreground font-sans lg:grid-cols-2">
+    <div className="grid min-h-screen bg-background text-foreground font-sans lg:grid-cols-2">
       {/* Branding panel */}
       <div className="relative hidden overflow-hidden border-r border-border/60 lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div className="pointer-events-none absolute inset-0 bg-grid opacity-60 [mask-image:radial-gradient(ellipse_70%_60%_at_30%_20%,#000_50%,transparent_100%)]" />

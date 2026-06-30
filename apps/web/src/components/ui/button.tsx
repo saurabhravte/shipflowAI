@@ -4,12 +4,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "group/btn relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[0.7rem] text-sm font-medium transition-[transform,background-color,box-shadow,color,border-color] duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+  "group/btn relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[0.7rem] text-sm font-medium transition-[transform,background-color,box-shadow,color,border-color] duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background will-change-transform",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90",
+          "bg-accent text-accent-foreground shadow-[0_1px_0_color-mix(in_oklch,var(--accent-foreground)_12%,transparent)] hover:bg-accent/92 hover:shadow-[0_8px_28px_-8px_color-mix(in_oklch,var(--accent)_65%,transparent)] hover:-translate-y-px active:translate-y-0",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:

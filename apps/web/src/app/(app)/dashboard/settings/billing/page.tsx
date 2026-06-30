@@ -45,10 +45,15 @@ export default function BillingSettingsPage() {
             <CardTitle className="capitalize">{billing.plan} plan</CardTitle>
             <Badge variant={billing.status === "active" ? "success" : "warning"}>{billing.status}</Badge>
           </div>
-          <CardDescription>Usage resets monthly.</CardDescription>
+          <CardDescription>Usage resets daily and monthly.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <UsageBar label="AI reviews" used={billing.usage.aiReviewsUsed} limit={billing.limits.aiReviewsPerMonth} />
+          <UsageBar
+            label="AI reviews today"
+            used={billing.usage.aiReviewsUsedToday}
+            limit={billing.limits.aiReviewsPerDay}
+          />
+          <UsageBar label="AI reviews (month)" used={billing.usage.aiReviewsUsed} limit={billing.limits.aiReviewsPerMonth} />
           <UsageBar
             label="PRD generations"
             used={billing.usage.prdGenerationsUsed}

@@ -25,6 +25,7 @@ export const PLANS = {
     name: "Free",
     razorpayPlanId: null as string | null,
     limits: {
+      aiReviewsPerDay: 5,
       aiReviewsPerMonth: 25,
       prdGenerationsPerMonth: 10,
       repositories: 1,
@@ -34,6 +35,7 @@ export const PLANS = {
     name: "Pro",
     razorpayPlanId: process.env.RAZORPAY_PRO_PLAN_ID ?? null,
     limits: {
+      aiReviewsPerDay: -1,
       aiReviewsPerMonth: 500,
       prdGenerationsPerMonth: 200,
       repositories: 10,
@@ -43,6 +45,7 @@ export const PLANS = {
     name: "Enterprise",
     razorpayPlanId: process.env.RAZORPAY_ENTERPRISE_PLAN_ID ?? null,
     limits: {
+      aiReviewsPerDay: -1,
       aiReviewsPerMonth: -1,
       prdGenerationsPerMonth: -1,
       repositories: -1,

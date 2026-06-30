@@ -9,6 +9,20 @@ function Toaster(props: ToasterProps) {
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
+      position="top-right"
+      richColors
+      closeButton
+      expand
+      visibleToasts={4}
+      toastOptions={{
+        duration: 4000,
+        classNames: {
+          toast:
+            "group toast border-border/80 bg-popover/95 text-popover-foreground shadow-lg backdrop-blur-xl",
+          title: "font-medium",
+          description: "text-muted-foreground",
+        },
+      }}
       className="toaster group"
       style={
         {

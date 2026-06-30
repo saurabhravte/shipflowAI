@@ -66,7 +66,7 @@ export const reviewPullRequest = inngest.createFunction(
           pullRequestId,
           triggeredBySha: headSha,
           status: "failed",
-          summary: "AI review skipped: workspace has reached its monthly AI review limit. Upgrade the plan to continue.",
+          summary: "AI review skipped: daily AI review limit reached (Free plan: 5/day). Upgrade to Pro for unlimited reviews.",
           startedAt: new Date(),
           completedAt: new Date(),
         });

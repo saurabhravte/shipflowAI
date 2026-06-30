@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, X, BookOpen, KeyRound, Rocket, ChevronDown } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -126,8 +127,9 @@ export function SiteHeader() {
               </div>
             </nav>
 
-            <div className="hidden items-center gap-2 md:flex">
-              <Button asChild variant="ghost" size="sm">
+        <div className="hidden items-center gap-2 md:flex">
+          <ThemeToggle />
+          <Button asChild variant="ghost" size="sm">
                 <Link href="/sign-in">Sign in</Link>
               </Button>
               <Button asChild size="sm">
@@ -187,8 +189,9 @@ export function SiteHeader() {
                     {l.label}
                   </Link>
                 ))}
-                <div className="mt-2 flex gap-2">
-                  <Button asChild variant="outline" className="flex-1">
+        <div className="mt-2 flex gap-2">
+            <ThemeToggle className="md:hidden" />
+            <Button asChild variant="outline" className="flex-1">
                     <Link href="/sign-in" onClick={() => setOpen(false)}>
                       Sign in
                     </Link>

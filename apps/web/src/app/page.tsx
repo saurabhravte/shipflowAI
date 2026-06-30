@@ -18,10 +18,12 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { PipelineFlow } from "@/components/marketing/pipeline-flow";
 import { DeliveryLoop } from "@/components/marketing/delivery-loop";
+import { CanvasText } from "@/components/marketing/canvas-text";
 import { Pricing } from "@/components/marketing/pricing";
 import { Faq } from "@/components/marketing/faq";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 const FEATURES = [
   {
@@ -89,7 +91,7 @@ const COMPARE = [
 
 export default function LandingPage() {
   return (
-    <div className="dark min-h-screen bg-background text-foreground font-sans">
+    <div className="min-h-screen bg-background text-foreground font-sans">
       <SiteHeader />
 
       {/* ───────────────────────── Hero ───────────────────────── */}
@@ -109,7 +111,7 @@ export default function LandingPage() {
             </Link>
 
             <h1 className="font-display text-6xl font-bold leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl">
-              Ship <span className="text-gradient-brand">reviewed.</span>
+              Ship <CanvasText className="text-6xl sm:text-7xl lg:text-8xl">reviewed.</CanvasText>
             </h1>
 
             <p className="font-display mt-3 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
@@ -179,18 +181,17 @@ export default function LandingPage() {
             {FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <div
-                  key={f.title}
-                  className="card-hover group relative flex flex-col gap-4 rounded-[var(--radius-2xl)] border border-border/70 bg-card/50 p-6"
-                >
-                  <span className="flex size-11 items-center justify-center rounded-[0.7rem] bg-accent/10 text-accent ring-1 ring-accent/20 transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
-                    <Icon className="size-5" />
-                  </span>
-                  <h3 className="font-display text-lg font-semibold">{f.title}</h3>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {f.body}
-                  </p>
-                </div>
+                <GlowingEffect key={f.title} className="rounded-[var(--radius-2xl)]">
+                  <div className="flex flex-col gap-4 p-6">
+                    <span className="flex size-11 items-center justify-center rounded-[0.7rem] bg-accent/10 text-accent ring-1 ring-accent/20 transition-colors group-hover/glow:bg-accent group-hover/glow:text-accent-foreground">
+                      <Icon className="size-5" />
+                    </span>
+                    <h3 className="font-display text-lg font-semibold">{f.title}</h3>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {f.body}
+                    </p>
+                  </div>
+                </GlowingEffect>
               );
             })}
           </div>

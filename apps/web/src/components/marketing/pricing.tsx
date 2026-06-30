@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { cn } from "@/lib/utils";
 
 const PLANS = [
@@ -13,6 +14,7 @@ const PLANS = [
     featured: false,
     features: [
       "1 connected repository",
+      "5 AI reviews / day",
       "25 AI reviews / month",
       "Feature request → PRD → tasks",
       "Bring your own API key",
@@ -54,15 +56,20 @@ export function Pricing() {
   return (
     <div className="grid w-full max-w-5xl mx-auto gap-5 md:grid-cols-3">
       {PLANS.map((plan) => (
-        <div
+        <GlowingEffect
           key={plan.name}
+          disabled={!plan.featured}
           className={cn(
-            "card-hover relative flex flex-col gap-6 rounded-[var(--radius-2xl)] border p-6",
-            plan.featured
-              ? "border-foreground/20 bg-card shadow-xl"
-              : "border-border/70 bg-card/50",
+            "rounded-[var(--radius-2xl)]",
+            plan.featured && "scale-[1.02] md:scale-105",
           )}
         >
+          <div
+            className={cn(
+              "relative flex h-full flex-col gap-6 p-6",
+              plan.featured && "bg-card",
+            )}
+          >
           {plan.featured && (
             <span className="absolute -top-3 left-6 rounded-full bg-accent px-3 py-1 text-[11px] font-semibold text-accent-foreground">
               Most popular
@@ -102,7 +109,8 @@ export function Pricing() {
               </li>
             ))}
           </ul>
-        </div>
+          </div>
+        </GlowingEffect>
       ))}
     </div>
   );

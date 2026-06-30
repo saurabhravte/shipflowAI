@@ -1,707 +1,518 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/ShipFlow-AI-6366f1?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyTDIgN2wxMCA1IDEwLTV6TTIgMTdsOSA1IDktNXYtNWwtOSA1LTktNXoiLz48L3N2Zz4=" alt="ShipflowAI" />
+# ShipFlow AI
 
-# ShipflowAI
+### Ship reviewed. Review, instantly.
 
-### AI-Powered Developer Shipping Intelligence Platform
+**AI-assisted product delivery — from feature request to reviewed, approved pull request.**
 
-> Automatically analyze GitHub repositories, generate changelogs, summarize pull requests, and surface shipping insights — powered by AI with durable background workflows.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-shipflow--ai.vercel.app-0066FF?style=for-the-badge)](https://shipflow-ai.vercel.app/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js_16-000?style=flat-square&logo=nextdotjs)](https://nextjs.org/)
+[![tRPC](https://img.shields.io/badge/tRPC-11-398CCB?style=flat-square)](https://trpc.io/)
+[![Inngest](https://img.shields.io/badge/Inngest-workflows-000?style=flat-square)](https://www.inngest.com/)
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-97%25-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs)](https://nextjs.org/)
-[![Turborepo](https://img.shields.io/badge/Turborepo-monorepo-EF4444?style=flat-square&logo=turborepo)](https://turbo.build/)
-[![Inngest](https://img.shields.io/badge/Inngest-workflows-5865F2?style=flat-square)](https://www.inngest.com/)
-[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](./LICENSE)
-
----
-
-**[🌐 Live Demo](https://shipflow-ai.vercel.app/)** · **[📹 Demo Video](#-demo)** · **[🎥 YC Pitch](#-yc-video)** · **[🐛 Report Bug](https://github.com/saurabhravte/shipflowAI/issues)**
+**[Live app](https://shipflow-ai.vercel.app/)** · **[Docs](https://shipflow-ai.vercel.app/docs)** · **[Report an issue](https://github.com/saurabhravte/shipflowAI/issues)**
 
 </div>
 
----
 
-## Demo
-
-> **Watch the full product walkthrough:**
-
-[![ShipflowAI Demo Video](https://img.shields.io/badge/▶%20Watch%20Demo-YouTube-FF0000?style=for-the-badge&logo=youtube)](https://youtube.com/watch?v=YOUR_DEMO_VIDEO_ID)
-
-> ⚠️ **Replace** `YOUR_DEMO_VIDEO_ID` with your actual YouTube video ID.
 
 ---
 
-## YC Video
+## Table of contents
 
-> **Y Combinator pitch / presentation:**
-
-[![YC Video](https://img.shields.io/badge/▶%20YC%20Video-YouTube-FF0000?style=for-the-badge&logo=youtube)](https://youtube.com/watch?v=YOUR_YC_VIDEO_ID)
-
-> ⚠️ **Replace** `YOUR_YC_VIDEO_ID` with your actual YC YouTube link.
-
----
-
-## Landing Page
-
-> **[🌐 Visit shipflowai.vercel.app →](https://shipflow-ai.vercel.app/)**
-
-The landing page highlights the core value proposition: connect your GitHub, let AI do the shipping intelligence — changelogs, PR summaries, release notes, and more — all automated in the background.
-
----
-
-## Table of Contents
-
-- [Overview](#-overview)
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Architecture](#-architecture)
-- [Monorepo Structure](#-monorepo-structure)
-- [Setup Instructions](#-setup-instructions)
-- [Environment Variables](#-environment-variables)
-- [Database Schema](#-database-schema)
-- [GitHub Integration Setup](#-github-integration-setup)
-- [Inngest Workflow Explanation](#-inngest-workflow-explanation)
-- [AI Features Implemented](#-ai-features-implemented)
-- [Contributing](#-contributing)
+- [Overview](#overview)
+- [The core loop](#the-core-loop)
+- [Features](#features)
+- [Tech stack](#tech-stack)
+- [Architecture](#architecture)
+- [Monorepo structure](#monorepo-structure)
+- [Setup](#setup)
+- [Environment variables](#environment-variables)
+- [Database schema](#database-schema)
+- [GitHub integration](#github-integration)
+- [Inngest workflows](#inngest-workflows)
+- [AI capabilities](#ai-capabilities)
+- [SaaS & billing](#saas--billing)
+- [Scripts](#scripts)
+- [Author](#author)
 
 ---
 
 ## Overview
 
-**ShipflowAI** is a developer productivity platform that connects to your GitHub repositories and uses AI to automate the most tedious parts of shipping software:
+Great software is not shipped by code generation alone. Every successful feature follows a process:
 
-- **Auto-generated changelogs** from commit history and merged PRs
-- **AI-summarized pull requests** with impact analysis
-- **Release intelligence** that understands what shipped and why it matters
-- **Background processing** via Inngest so nothing blocks your UI
+**Request → Product thinking → PRD → Tasks → Implementation → Review → Fixes → Approval → Release**
 
-Built as a hackathon project, ShipflowAI demonstrates how AI + event-driven workflows can transform the way engineering teams communicate about their work.
+**ShipFlow AI** is a full-stack SaaS platform that manages that entire lifecycle. Product and engineering teams use it to:
+
+1. **Intake** a feature request (email, ticket, call transcript, or free text)
+2. **Clarify** missing requirements with an AI agent
+3. **Generate** a structured PRD and engineering task breakdown
+4. **Connect** work to a GitHub repository via a GitHub App
+5. **Track** implementation through pull requests
+6. **Run** AI-powered code reviews against PRD requirements, acceptance criteria, and repo context
+7. **Loop** fixes and re-reviews until the feature is ready
+8. **Approve** release through human gates — only then mark the feature as **shipped**
+
+Humans remain the final decision makers. The AI acts as a QA and engineering reviewer, not a syntax checker.
+
+---
+
+## The core loop
+
+```
+Feature Request
+      │
+      ▼
+  Clarification (AI follow-up questions)
+      │
+      ▼
+  PRD generation ──► Human PRD approval
+      │
+      ▼
+  Task breakdown ──► Human plan approval
+      │
+      ▼
+  Development (GitHub PR)
+      │
+      ▼
+  AI review ◄──────┐
+      │            │
+      ▼            │ fix & re-review
+  fix_needed ──────┘
+      │
+      ▼
+  Human approval
+      │
+      ▼
+   Shipped
+```
+
+**Status machine** (single source of truth on `feature_request.status`):
+
+`draft` → `clarifying` → `prd_generating` → `prd_review` → `tasks_generating` → `tasks_review` → `in_development` → `ai_reviewing` ↔ `fix_needed` → `human_approval` → `shipped` | `rejected`
+
+All transitions are enforced centrally in `apps/web/src/server/workflows/state-machine.ts`.
 
 ---
 
 ## Features
 
-| Feature                 | Description                                                           |
-| ----------------------- | --------------------------------------------------------------------- |
-| GitHub OAuth            | Connect any public or private repository with one click               |
-| AI Changelog Generator  | Automatically generate human-readable changelogs from commits and PRs |
-| PR Summarizer           | Summarize pull requests using LLMs with code-aware context            |
-| Release Notes           | Draft release notes ready for GitHub Releases or Notion               |
-| Durable Background Jobs | Inngest-powered workflows that survive restarts and handle failures   |
-| Persistent Storage      | All summaries and changelogs saved to Postgres via Drizzle ORM        |
-| Authentication          | Secure auth with Better Auth — GitHub, Google, and email/password, with dedicated sign-in/sign-up pages |
-| Modern UI               | Clean, responsive interface built with Tailwind CSS + shadcn/ui       |
+| Area | What ShipFlow does |
+|------|-------------------|
+| **Product discovery** | AI clarifying questions; duplicate-feature education when applicable |
+| **PRD editor** | Structured PRD with problem statement, goals, non-goals, user stories, acceptance criteria, edge cases, success metrics |
+| **Task board** | Kanban columns generated from the PRD; human approves the plan before dev |
+| **GitHub App** | Install app, list repos, receive webhooks, fetch diffs, post review comments |
+| **AI code review** | Reviews PRs against PRD + tasks + diff + repo-aware context (Pinecone retrieval) |
+| **Review loop** | Blocking / non-blocking findings; re-review on new pushes until clean |
+| **Human gates** | PRD approval, task-plan approval, final release approval |
+| **Multi-tenant SaaS** | Workspaces, members, per-workspace projects and billing |
+| **Billing** | Free / Pro / Enterprise plans with usage limits (Razorpay) |
+| **Auth** | Better Auth — email/password, Google, GitHub OAuth |
 
 ---
 
-## Tech Stack
+## Tech stack
 
-### Frontend
+| Layer | Technology |
+|-------|------------|
+| **Monorepo** | pnpm workspaces + Turborepo |
+| **Web app** | Next.js 16 (App Router), React 19, Tailwind CSS v4, shadcn/ui |
+| **API** | tRPC v11 + TanStack Query + SuperJSON |
+| **Database** | PostgreSQL + Drizzle ORM (`@shipflow/db`) |
+| **Auth** | Better Auth |
+| **Background jobs** | Inngest (durable step functions) |
+| **GitHub** | Octokit GitHub App + webhooks |
+| **AI** | Vercel AI SDK + OpenRouter (tiered fast / review models) |
+| **Vector search** | Pinecone (repo-aware review context) |
+| **Payments** | Razorpay subscriptions |
+| **Deploy** | Vercel |
 
-| Technology                                    | Purpose                              |
-| --------------------------------------------- | ------------------------------------ |
-| [Next.js 16](https://nextjs.org/)             | React framework with App Router      |
-| [Tailwind CSS](https://tailwindcss.com/)      | Utility-first styling                |
-| [shadcn/ui](https://ui.shadcn.com/)           | Accessible, composable UI components |
-| [TypeScript](https://www.typescriptlang.org/) | Full type safety across the stack    |
-
-### Backend
-
-| Technology                                                                                         | Purpose                                         |
-| -------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| [Next.js API Routes](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) | API layer via App Router Route Handlers         |
-| [Drizzle ORM](https://orm.drizzle.team/)                                                           | Type-safe SQL ORM                               |
-| [PostgreSQL](https://www.postgresql.org/)                                                          | Primary relational database (via Neon/Supabase) |
-| [Inngest](https://www.inngest.com/)                                                                | Durable background workflow orchestration       |
-
-### Auth & Integrations
-
-| Technology                                          | Purpose                                               |
-| --------------------------------------------------- | ----------------------------------------------------- |
-| [Better Auth](https://www.better-auth.com/)         | Authentication — GitHub OAuth, Google OAuth, email/password           |
-| [GitHub REST API](https://docs.github.com/en/rest)  | Repository data, commits, PRs, releases               |
-| [OpenAI / Claude API](https://platform.openai.com/) | LLM inference for summaries and changelogs            |
-
-### Infrastructure & Tooling
-
-| Technology                                            | Purpose                                   |
-| ----------------------------------------------------- | ----------------------------------------- |
-| [Turborepo](https://turbo.build/repo)                 | Monorepo build system with remote caching |
-| [pnpm](https://pnpm.io/)                              | Fast, disk-efficient package manager      |
-| [Vercel](https://vercel.com/)                         | Deployment and edge runtime               |
-| [GitHub Actions](https://github.com/features/actions) | CI/CD pipeline                            |
+**Typography:** Manrope (display / headings) · Geist (body / UI) · Geist Mono (code, IDs, diffs)
 
 ---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                        User Browser                      │
-│              (Next.js App Router UI — /apps/web)         │
-└──────────────────────┬──────────────────────────────────┘
-                       │  HTTP / Server Actions
-┌──────────────────────▼──────────────────────────────────┐
-│              Next.js API Layer (Route Handlers)          │
-│   /api/github/webhook   /api/inngest   /api/repos/...   │
-└───────────┬───────────────────────┬─────────────────────┘
-            │                       │
-     ┌──────▼──────┐         ┌──────▼──────────────────┐
-     │  Better Auth  │         │   Inngest SDK (trigger) │
-     │  (JWT/Session)│        │   sends events →        │
-     └─────────────┘         └──────────┬──────────────┘
-                                         │
-┌────────────────────────────────────────▼────────────────┐
-│                   Inngest Worker (serverless)            │
-│                                                          │
-│  ┌─────────────────┐   ┌──────────────────────────────┐ │
-│  │  repo.analyze   │   │  pr.summarize                │ │
-│  │  (multi-step)   │   │  (multi-step)                │ │
-│  └────────┬────────┘   └──────────────┬───────────────┘ │
-│           │                           │                  │
-│  step.run("fetch-commits") ──► GitHub REST API           │
-│  step.run("generate-ai")   ──► OpenAI / Claude API       │
-│  step.run("save-result")   ──► Drizzle ORM ──► Postgres  │
-└─────────────────────────────────────────────────────────┘
-
-         ┌─────────────────────────────────┐
-         │         PostgreSQL (Neon)        │
-         │  users / repos / analyses /      │
-         │  changelogs / pr_summaries       │
-         └─────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│  Browser — Next.js App Router (apps/web)                        │
+│  Landing · Auth · Dashboard · PRD editor · Task board · Reviews │
+└────────────────────────────┬────────────────────────────────────┘
+                             │ tRPC (type-safe) + Better Auth cookies
+┌────────────────────────────▼────────────────────────────────────┐
+│  Next.js Route Handlers                                         │
+│  /api/trpc/[trpc]   /api/auth/*   /api/inngest   /api/webhooks/* │
+└──────┬──────────────────────────────┬─────────────────────────────┘
+       │                              │
+┌──────▼──────┐              ┌───────▼────────────────────────────┐
+│  tRPC       │              │  Inngest worker (serverless)        │
+│  routers    │──events─────►│  clarify · generate-prd ·           │
+│  (9 domains)│              │  generate-tasks · review-pull-request│
+└──────┬──────┘              └───────┬────────────────────────────┘
+       │                              │
+       │         ┌────────────────────┼────────────────────┐
+       │         │                    │                    │
+       ▼         ▼                    ▼                    ▼
+  PostgreSQL  GitHub App API    OpenRouter (AI SDK)    Pinecone
+  (Drizzle)   (Octokit)                              (embeddings)
 ```
 
-**Key Design Decisions:**
+**Design principles**
 
-1. **Event-driven, not request-driven** — triggering an analysis sends an Inngest event. The UI responds immediately; work happens in the background.
-2. **Step functions for AI** — each Inngest step is retried independently, so a flaky LLM call doesn't restart the whole pipeline.
-3. **GitHub webhook + manual trigger** — analyses run on push/PR events automatically, or on demand from the dashboard.
-4. **Monorepo with shared packages** — `@repo/ui`, `@repo/eslint-config`, `@repo/typescript-config` are shared across apps.
+1. **Event-driven workflows** — long-running AI and GitHub work runs in Inngest; the UI stays responsive.
+2. **Step-level retries** — each Inngest `step.run()` retries independently; a flaky model call does not restart the whole pipeline.
+3. **Centralized state machine** — every status change goes through `transitionFeatureRequest()`.
+4. **Workspace tenancy** — `workspaceProcedure` enforces multi-tenant isolation on all tRPC mutations.
+5. **Real GitHub data** — pull request reviews use live webhooks and Octokit; no hardcoded PR data.
 
 ---
 
-## Monorepo Structure (tRPC)
+## Monorepo structure
 
 ```
 shipflowAI/
 ├── apps/
-│   └── web/                    # Main Next.js application
-│       ├── app/
-│       │   ├── (dashboard)/    # Protected dashboard routes
-│       │   ├── api/
-│       │   │   ├── inngest/    # Inngest serve endpoint
-│       │   │   ├── github/
-│       │   │   │   └── webhook/  # GitHub webhook handler
-│       │   │   └── repos/      # Repository API routes
-│       │   └── layout.tsx
-│       ├── components/         # React components
-│       ├── lib/
-│       │   ├── db/
-│       │   │   ├── schema.ts   # Drizzle schema definitions
-│       │   │   └── index.ts    # DB client
-│       │   ├── inngest/
-│       │   │   ├── client.ts   # Inngest client setup
-│       │   │   └── functions/  # Background workflow functions
-│       │   │       ├── analyze-repo.ts
-│       │   │       └── summarize-pr.ts
-│       │   ├── github.ts       # GitHub API helpers
-│       │   └── ai.ts           # AI inference helpers
-│       └── middleware.ts       # Better Auth session check (redirect-if-unauthenticated)
-│
+│   └── web/                          # Next.js application
+│       ├── src/
+│       │   ├── app/                  # App Router pages
+│       │   │   ├── (auth)/           # Sign-in, sign-up
+│       │   │   ├── (app)/dashboard/  # Protected product UI
+│       │   │   ├── docs/             # In-app documentation
+│       │   │   └── api/
+│       │   │       ├── trpc/         # tRPC handler
+│       │   │       ├── inngest/      # Inngest serve endpoint
+│       │   │       ├── webhooks/
+│       │   │       │   ├── github/   # GitHub App webhooks
+│       │   │       │   └── razorpay/ # Billing webhooks
+│       │   │       └── github/install/
+│       │   ├── components/           # UI + marketing components
+│       │   ├── lib/                  # AI, GitHub, billing, vector helpers
+│       │   └── server/
+│       │       ├── routers/          # tRPC domain routers (9)
+│       │       ├── inngest/functions/
+│       │       ├── workflows/        # Feature-request state machine
+│       │       └── auth/
+│       └── public/
 ├── packages/
-│   ├── ui/                     # Shared React component library
-│   ├── eslint-config/          # Shared ESLint config
-│   └── typescript-config/      # Shared tsconfig bases
-│
-├── .github/
-│   └── workflows/
-│       └── ci.yml              # CI/CD pipeline
-├── turbo.json                  # Turborepo pipeline config
+│   ├── db/                           # Drizzle schema, migrations, client
+│   └── typescript-config/            # Shared tsconfig bases
+├── .env.example                      # Environment variable template
 ├── pnpm-workspace.yaml
-└── package.json
+└── turbo.json
 ```
+
+### tRPC routers
+
+| Router | Responsibility |
+|--------|----------------|
+| `workspace` | Workspace CRUD, member management |
+| `project` | Projects within a workspace |
+| `featureRequest` | Intake, clarification, status |
+| `prd` | PRD read/update and approval |
+| `task` | Kanban tasks and plan approval |
+| `github` | App install, repo list, link repo to project |
+| `pullRequest` | PR listing and detail |
+| `review` | AI review runs and findings |
+| `approval` | Human approval gates |
+| `billing` | Plans, usage, Razorpay subscription |
 
 ---
 
-## Setup Instructions
+## Setup
 
 ### Prerequisites
 
-- **Node.js** 20.x or later
-- **pnpm** 9.x or later (`npm install -g pnpm`)
-- **PostgreSQL** database (local, [Neon](https://neon.tech), or [Supabase](https://supabase.com))
-- **Inngest** account (optional for local dev — they have a local dev server)
-- **GitHub OAuth App** — for repository access
+- **Node.js** 20+
+- **pnpm** 9+ (`npm install -g pnpm`)
+- **PostgreSQL** (local, [Neon](https://neon.tech), or [Supabase](https://supabase.com))
+- **Inngest** account (or local dev server)
+- **GitHub OAuth App** (login) + **GitHub App** (repo access & webhooks)
+- **OpenRouter** API key (AI inference)
+- **Pinecone** index (1536 dimensions — for repo-aware review context)
+- **Razorpay** keys (optional — billing)
 
-### 1. Clone the repository
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/saurabhravte/shipflowAI.git
 cd shipflowAI
-```
-
-### 2. Install dependencies
-
-```bash
 pnpm install
 ```
 
-### 3. Configure environment variables
+### 2. Environment variables
 
 ```bash
-cp apps/web/.env.example apps/web/.env.local
+cp .env.example .env
 ```
 
-Fill in all required values (see [Environment Variables](#-environment-variables) below).
+Fill in every required value — see [Environment variables](#environment-variables) below.
 
-### 4. Set up the database
+### 3. Database
 
 ```bash
-# Generate migration files
-pnpm --filter web db:generate
-
-# Apply migrations to your database
-pnpm --filter web db:migrate
+pnpm db:migrate
 ```
 
-### 5. Start the development server
+Optional — open Drizzle Studio:
 
 ```bash
-# Start all apps in parallel (recommended)
+pnpm db:studio
+```
+
+### 4. Run locally
+
+**Terminal 1 — Next.js**
+
+```bash
 pnpm dev
-
-# Or start only the web app
-pnpm --filter web dev
 ```
 
-### 6. Start the Inngest Dev Server (local background jobs)
+App runs at [http://localhost:3000](http://localhost:3000).
 
-In a separate terminal:
+**Terminal 2 — Inngest dev server**
 
 ```bash
-npx inngest-cli@latest dev
+pnpm inngest:dev
 ```
 
-This starts the local Inngest dashboard at `http://localhost:8288` where you can inspect and replay events.
+Dashboard at [http://localhost:8288](http://localhost:8288).
 
-### 7. Expose your local server to GitHub webhooks (optional)
+### 5. Expose webhooks locally (optional)
 
 ```bash
-# Using ngrok or cloudflared
 ngrok http 3000
 ```
 
-Copy the HTTPS URL and add it as a GitHub webhook (see [GitHub Integration Setup](#-github-integration-setup)).
+Use the HTTPS URL as:
+
+- `NEXT_PUBLIC_APP_URL` (for OAuth callbacks)
+- GitHub App **Webhook URL**: `https://<tunnel>/api/webhooks/github`
 
 ---
 
-## Environment Variables
+## Environment variables
 
-Create `apps/web/.env.local` with the following:
+Copy `.env.example` to `.env` at the **repository root**.
 
-```env
-# ─── Database ────────────────────────────────────────────────────────────────
-DATABASE_URL="postgresql://user:password@host:5432/shipflowai"
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_APP_URL` | ✅ | Public app origin, no trailing slash (e.g. `https://shipflow-ai.vercel.app`) |
+| `DATABASE_URL` | ✅ | PostgreSQL connection string |
+| `BETTER_AUTH_SECRET` | ✅ | Session signing secret (`openssl rand -hex 32`) |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | ➖ | Google OAuth (optional social login) |
+| `GITHUB_OAUTH_CLIENT_ID` / `GITHUB_OAUTH_CLIENT_SECRET` | ➖ | GitHub OAuth for **login only** (separate from GitHub App) |
+| `GITHUB_APP_ID` | ✅ | GitHub App ID |
+| `GITHUB_APP_PRIVATE_KEY` | ✅ | GitHub App PEM private key |
+| `GITHUB_APP_WEBHOOK_SECRET` | ✅ | Webhook signature secret |
+| `GITHUB_APP_SLUG` | ✅ | App slug (install URL) |
+| `OPENROUTER_API_KEY` | ✅ | AI inference via OpenRouter |
+| `PINECONE_API_KEY` | ✅ | Vector store for repo-aware reviews |
+| `PINECONE_INDEX` | ✅ | Pinecone index name (1536-dim embeddings) |
+| `INNGEST_EVENT_KEY` | ✅ | Inngest event key |
+| `INNGEST_SIGNING_KEY` | ✅ | Inngest signing key |
+| `INNGEST_DEV` | ➖ | Set `1` when using local Inngest dev server |
+| `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | ➖ | Razorpay API keys |
+| `RAZORPAY_WEBHOOK_SECRET` | ➖ | Razorpay webhook verification |
+| `RAZORPAY_PRO_PLAN_ID` / `RAZORPAY_ENTERPRISE_PLAN_ID` | ➖ | Subscription plan IDs from Razorpay dashboard |
 
-# ─── Better Auth ─────────────────────────────────────────────────────────────
-BETTER_AUTH_SECRET="generate-with-openssl-rand-base64-32"
-GOOGLE_CLIENT_ID="your-google-oauth-client-id"
-GOOGLE_CLIENT_SECRET="your-google-oauth-client-secret"
-GITHUB_OAUTH_CLIENT_ID="your-github-oauth-app-client-id"
-GITHUB_OAUTH_CLIENT_SECRET="your-github-oauth-app-client-secret"
-# Note: this is a separate GitHub OAuth App from the GitHub App below —
-# login should not require granting repo permissions.
+**OAuth callback URLs** (replace with your `NEXT_PUBLIC_APP_URL`):
 
-# ─── Inngest ─────────────────────────────────────────────────────────────────
-INNGEST_EVENT_KEY="your-inngest-event-key"
-INNGEST_SIGNING_KEY="your-inngest-signing-key"
+- Google: `<APP_URL>/api/auth/callback/google`
+- GitHub login: `<APP_URL>/api/auth/callback/github`
 
-# ─── GitHub App (repo access / webhooks) ─────────────────────────────────────
-GITHUB_APP_ID="your-github-app-id"
-GITHUB_WEBHOOK_SECRET="your-webhook-secret"
-
-# ─── AI Provider ─────────────────────────────────────────────────────────────
-OPENAI_API_KEY="sk-..."
-# OR
-ANTHROPIC_API_KEY="sk-ant-..."
-
-# ─── App ─────────────────────────────────────────────────────────────────────
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-```
-
-| Variable                     | Required | Description                                                              |
-| ----------------------------- | -------- | ------------------------------------------------------------------------- |
-| `DATABASE_URL`                | ✅       | PostgreSQL connection string                                              |
-| `BETTER_AUTH_SECRET`          | ✅       | Secret used to sign Better Auth sessions/cookies                          |
-| `GOOGLE_CLIENT_ID`            | ➖       | Google OAuth client ID (for "Continue with Google")                      |
-| `GOOGLE_CLIENT_SECRET`        | ➖       | Google OAuth client secret                                                |
-| `GITHUB_OAUTH_CLIENT_ID`      | ➖       | GitHub OAuth App client ID (for login, not repo access)                  |
-| `GITHUB_OAUTH_CLIENT_SECRET`  | ➖       | GitHub OAuth App secret                                                   |
-| `INNGEST_EVENT_KEY`           | ✅       | Inngest API event key                                                     |
-| `INNGEST_SIGNING_KEY`         | ✅       | Inngest webhook signing key                                               |
-| `GITHUB_APP_ID`               | ✅       | GitHub App ID (repo access/installation, separate from OAuth login app)  |
-| `GITHUB_WEBHOOK_SECRET`       | ✅       | Secret to verify webhook payloads                                        |
-| `OPENAI_API_KEY`              | ✅       | OpenAI API key for LLM inference                                         |
-| `ANTHROPIC_API_KEY`           | ➖       | Alternative — Anthropic Claude API key                                   |
-
-Email/password sign-in works out of the box with no extra config. The Google/GitHub OAuth variables above are only needed if you also want the social sign-in buttons to work.
+Email/password sign-in works without OAuth credentials.
 
 ---
 
-## Database Schema
+## Database schema
 
-Managed with **Drizzle ORM**. Schema lives in `apps/web/lib/db/schema.ts`.
+Schema lives in `packages/db/src/schema/`. Migrations in `packages/db/drizzle/`.
 
-### Tables
+### Domain tables
 
-#### `users`
+| Table | Purpose |
+|-------|---------|
+| `user`, `session`, `account`, `verification` | Better Auth |
+| `workspace`, `member` | Multi-tenant organizations |
+| `project` | Projects inside a workspace |
+| `feature_request` | Root of the core loop; authoritative `status` column |
+| `clarifying_exchange` | AI Q&A during clarification phase |
+| `prd` | Structured product requirements document |
+| `task` | Engineering tasks (Kanban) |
+| `approval` | Human approval records (PRD, plan, release) |
+| `github_installation` | GitHub App install per workspace |
+| `repository` | Connected repos; optional `project_id` link |
+| `pull_request` | Tracked PRs from webhooks |
+| `review_run` | One row per AI review execution |
+| `review_finding` | Individual findings (severity, category, file/line) |
+| `subscription`, `usage_record` | Billing plan and monthly usage counters |
 
-Better Auth's user table — created on sign-up, updated on profile changes.
+### Feature request statuses
 
-```sql
-users (
-  id          TEXT PRIMARY KEY,        -- Better Auth user ID
-  email       TEXT NOT NULL UNIQUE,
-  name        TEXT,
-  avatar_url  TEXT,
-  created_at  TIMESTAMP DEFAULT NOW()
-)
+```
+draft | clarifying | prd_generating | prd_review | tasks_generating |
+tasks_review | in_development | ai_reviewing | fix_needed |
+human_approval | shipped | rejected
 ```
 
-#### `repositories`
-
-GitHub repositories connected by users.
-
-```sql
-repositories (
-  id            SERIAL PRIMARY KEY,
-  user_id       TEXT REFERENCES users(id),
-  github_id     INTEGER NOT NULL,
-  full_name     TEXT NOT NULL,           -- e.g. "owner/repo"
-  name          TEXT NOT NULL,
-  private       BOOLEAN DEFAULT FALSE,
-  install_token TEXT,                    -- GitHub installation access token
-  webhook_id    INTEGER,
-  created_at    TIMESTAMP DEFAULT NOW()
-)
-```
-
-#### `analyses`
-
-Records of AI analysis runs.
-
-```sql
-analyses (
-  id            SERIAL PRIMARY KEY,
-  repo_id       INTEGER REFERENCES repositories(id),
-  status        TEXT DEFAULT 'pending', -- pending | running | done | failed
-  trigger       TEXT,                   -- 'push' | 'manual' | 'pr'
-  inngest_run_id TEXT,
-  started_at    TIMESTAMP,
-  completed_at  TIMESTAMP,
-  created_at    TIMESTAMP DEFAULT NOW()
-)
-```
-
-#### `changelogs`
-
-AI-generated changelog entries.
-
-```sql
-changelogs (
-  id          SERIAL PRIMARY KEY,
-  analysis_id INTEGER REFERENCES analyses(id),
-  repo_id     INTEGER REFERENCES repositories(id),
-  version     TEXT,                      -- e.g. "v1.2.0" or date-based
-  content     TEXT NOT NULL,             -- Markdown changelog text
-  from_sha    TEXT,
-  to_sha      TEXT,
-  created_at  TIMESTAMP DEFAULT NOW()
-)
-```
-
-#### `pr_summaries`
-
-AI-summarized pull requests.
-
-```sql
-pr_summaries (
-  id          SERIAL PRIMARY KEY,
-  repo_id     INTEGER REFERENCES repositories(id),
-  pr_number   INTEGER NOT NULL,
-  pr_title    TEXT NOT NULL,
-  summary     TEXT NOT NULL,             -- AI-generated summary
-  impact      TEXT,                      -- "low" | "medium" | "high"
-  labels      TEXT[],
-  author      TEXT,
-  merged_at   TIMESTAMP,
-  created_at  TIMESTAMP DEFAULT NOW()
-)
-```
-
-### Migrations
+### Schema commands
 
 ```bash
-# Generate a new migration after schema changes
-pnpm --filter web db:generate
-
-# Apply pending migrations
-pnpm --filter web db:migrate
-
-# View schema in Drizzle Studio
-pnpm --filter web db:studio
+# After editing packages/db/src/schema/*
+pnpm db:generate   # create migration
+pnpm db:migrate    # apply migrations
+pnpm db:studio     # visual browser
 ```
 
 ---
 
-## GitHub Integration Setup
+## GitHub integration
 
-### Step 1: Create a GitHub OAuth App
+ShipFlow uses a **GitHub App** (not a PAT) for repository access, webhooks, diff fetching, and posting review comments. Login uses a **separate GitHub OAuth App** so signing in does not require repo permissions.
 
-1. Go to **GitHub → Settings → Developer settings → OAuth Apps → New OAuth App**
-2. Set:
-   - **Application name:** `ShipflowAI (local)` or `ShipflowAI`
-   - **Homepage URL:** `http://localhost:3000`
-   - **Authorization callback URL:** `http://localhost:3000/api/auth/callback/github`
-3. Copy the **Client ID** and **Client Secret** → add to `.env.local`
+### Step 1 — GitHub OAuth App (login)
 
-### Step 2: Add the credentials to Better Auth
+1. [GitHub → Developer settings → OAuth Apps → New](https://github.com/settings/developers)
+2. **Authorization callback URL:** `<NEXT_PUBLIC_APP_URL>/api/auth/callback/github`
+3. Copy Client ID and Secret → `GITHUB_OAUTH_CLIENT_*` in `.env`
 
-Better Auth reads OAuth credentials directly from environment variables — there's no external dashboard step. Just make sure `.env.local` has:
+### Step 2 — GitHub App (repos & webhooks)
 
-```env
-GITHUB_OAUTH_CLIENT_ID="..."
-GITHUB_OAUTH_CLIENT_SECRET="..."
+1. [Create a new GitHub App](https://github.com/settings/apps/new)
+2. **Webhook URL:** `<NEXT_PUBLIC_APP_URL>/api/webhooks/github`
+3. **Webhook secret:** set `GITHUB_APP_WEBHOOK_SECRET`
+4. **Permissions:** Contents (read), Pull requests (read & write), Metadata (read)
+5. **Subscribe to events:** Pull request, Installation
+6. Generate a private key → `GITHUB_APP_PRIVATE_KEY`
+7. Note App ID and slug → `GITHUB_APP_ID`, `GITHUB_APP_SLUG`
+
+### Step 3 — Install in the dashboard
+
+1. Sign in to ShipFlow → **Settings → GitHub**
+2. Click **Install GitHub App** and authorize your org/account
+3. Link a repository to a project (via `github.linkRepository` API / settings UI)
+
+### Step 4 — Link PRs to feature requests
+
+Include this tag in the PR **title or body**:
+
+```
+ShipFlow: fr_xxxxxxxx
 ```
 
-This is intentionally a separate OAuth App from the GitHub App used for repo access/webhooks below — logging in shouldn't require granting repo permissions, and repo access shouldn't require a specific user to have signed in via GitHub.
-
-### Step 3: Set up a GitHub Webhook (for automatic analysis)
-
-For each repository you want to monitor:
-
-1. Go to **Repository → Settings → Webhooks → Add webhook**
-2. Set:
-   - **Payload URL:** `https://your-domain.com/api/github/webhook`
-   - **Content type:** `application/json`
-   - **Secret:** Your `GITHUB_WEBHOOK_SECRET` value
-   - **Events:** Select `Push`, `Pull requests`
-3. Click **Add webhook**
-
-The webhook handler at `/api/github/webhook` will:
-
-- Verify the `X-Hub-Signature-256` HMAC signature
-- Parse the event type (`push` or `pull_request`)
-- Send an Inngest event to trigger the appropriate workflow
-
-### Step 4: Personal Access Token (for manual analysis)
-
-Users can also connect repos using a GitHub Personal Access Token:
-
-1. **GitHub → Settings → Developer settings → Personal access tokens → Tokens (fine-grained)**
-2. Grant **Contents (read)** and **Pull requests (read)** permissions
-3. Paste the token in the ShipflowAI dashboard → **Connect Repository**
+Replace `fr_xxxxxxxx` with the feature request ID shown in the dashboard. Webhooks parse this convention to attach the PR to the correct request and trigger AI review.
 
 ---
 
-## Inngest Workflow Explanation
+## Inngest workflows
 
-[Inngest](https://www.inngest.com/) provides **durable execution** — workflows that survive server restarts, handle retries automatically, and give you step-level observability.
+Handler: `apps/web/src/app/api/inngest/route.ts`
 
-### How it's wired up
+| Function | Trigger event | Steps (summary) |
+|----------|---------------|-----------------|
+| `clarify-feature-request` | `feature_request/clarify` | Load request → AI questions → save exchanges → transition status |
+| `generate-prd` | `feature_request/generate_prd` | Load context → `generateObject` (Zod schema) → save PRD → `prd_review` |
+| `generate-tasks` | `feature_request/generate_tasks` | Load PRD → generate tasks → save to board → `tasks_review` |
+| `review-pull-request` | `github/pull_request.review_requested` | Check usage limit → fetch diff & files → Pinecone retrieval → AI review → post GitHub comments → update findings → transition to `fix_needed` or `human_approval` |
 
-The Inngest serve handler is mounted at `/api/inngest`:
+Each workflow uses **durable steps** — if the LLM call fails, only that step retries.
 
-```typescript
-// apps/web/app/api/inngest/route.ts
-import { serve } from "inngest/next";
-import { inngest } from "@/lib/inngest/client";
-import { analyzeRepo, summarizePR } from "@/lib/inngest/functions";
-
-export const { GET, POST, PUT } = serve({
-  client: inngest,
-  functions: [analyzeRepo, summarizePR],
-});
-```
-
-### Workflow 1: `repo/analyze` — Repository Changelog Generation
-
-**Trigger:** `repo.analyze.requested` event (fired on push webhook or manual trigger)
-
-```
-Event received
-    │
-    ▼
-step: "fetch-commits"
-    │  GitHub API: list commits since last analysis
-    ▼
-step: "fetch-merged-prs"
-    │  GitHub API: list PRs merged in this window
-    ▼
-step: "generate-changelog"
-    │  LLM: given commits + PR titles + diffs → Markdown changelog
-    ▼
-step: "save-to-db"
-    │  Drizzle: INSERT into changelogs table
-    ▼
-step: "update-analysis-status"
-       Drizzle: mark analysis as "done"
-```
-
-Each `step.run()` is **individually retried** on failure. If the LLM call times out, only that step retries — not the whole workflow.
-
-### Workflow 2: `pr/summarize` — Pull Request Summarizer
-
-**Trigger:** `pr.opened` or `pr.merged` GitHub webhook event
-
-```
-Event received (PR number + repo)
-    │
-    ▼
-step: "fetch-pr-details"
-    │  GitHub API: get PR body, commits, file changes
-    ▼
-step: "generate-summary"
-    │  LLM: summarize what changed, why it matters, blast radius
-    ▼
-step: "classify-impact"
-    │  LLM: classify as low / medium / high impact
-    ▼
-step: "save-summary"
-       Drizzle: INSERT into pr_summaries table
-```
-
-### Inngest Event Schema
-
-```typescript
-// Events sent to Inngest
-type ShipflowEvents = {
-  "repo.analyze.requested": {
-    data: {
-      repoId: number;
-      userId: string;
-      fromSha?: string;
-      toSha?: string;
-    };
-  };
-  "pr.opened": {
-    data: {
-      repoId: number;
-      prNumber: number;
-      action: "opened" | "closed";
-      merged: boolean;
-    };
-  };
-};
-```
-
-### Local Development with Inngest
+### Local Inngest
 
 ```bash
-# 1. Start Next.js
-pnpm dev
-
-# 2. Start Inngest Dev Server
-npx inngest-cli@latest dev -u http://localhost:3000/api/inngest
-
-# 3. Open Inngest dashboard
-open http://localhost:8288
+pnpm dev          # Terminal 1
+pnpm inngest:dev  # Terminal 2 — dashboard at http://localhost:8288
 ```
 
-In the dashboard you can: replay events, inspect each step's input/output, trigger test events, and view logs.
+Use the dashboard to inspect step input/output, replay events, and debug failures.
 
----
+### GitHub → Inngest flow
 
-## AI Features Implemented
-
-### 1. Changelog Generation
-
-Given a list of commits and merged PRs, the LLM generates a structured, human-readable changelog grouped by type (Features, Bug Fixes, Performance, Breaking Changes).
-
-**Prompt approach:** Few-shot prompting with examples of good changelogs. Commits are filtered for noise (Merge commits, chore: prefix) before being sent to the LLM.
-
-### 2. Pull Request Summarization
-
-Each PR is summarized with:
-
-- **What changed** — plain-English description of the diff
-- **Why it matters** — inferred business or technical impact
-- **Files affected** — key files touched
-- **Risk assessment** — potential blast radius
-
-**Prompt approach:** Chain-of-thought prompting. The model reasons step-by-step about the changes before writing the final summary.
-
-### 3. Impact Classification
-
-PRs are classified as **Low / Medium / High** impact based on:
-
-- Number and type of files changed
-- Presence of database migrations
-- Changes to public API surfaces
-- Test coverage signals
-
-### 4. Release Notes Drafting
-
-Combines all changelogs and PR summaries for a given version window into a polished release note suitable for GitHub Releases, Slack announcements, or customer-facing communications.
-
-### AI Model Configuration
-
-```typescript
-// apps/web/lib/ai.ts
-import OpenAI from "openai";
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-export async function generateChangelog(commits: Commit[], prs: PR[]) {
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o",
-    messages: [
-      { role: "system", content: CHANGELOG_SYSTEM_PROMPT },
-      { role: "user", content: buildChangelogPrompt(commits, prs) },
-    ],
-    temperature: 0.3, // Lower temperature for consistent, factual output
-    max_tokens: 2000,
-  });
-  return response.choices[0].message.content;
-}
+```
+GitHub webhook (PR opened / synchronize / reopened)
+        │
+        ▼
+Webhook handler upserts pull_request row
+        │
+        ▼
+inngest.send("github/pull_request.review_requested")
+        │
+        ▼
+review-pull-request function runs (async)
 ```
 
 ---
 
-## CI/CD
+## AI capabilities
 
-GitHub Actions pipeline runs on every push to `master`:
+Powered by the **Vercel AI SDK** with **structured outputs** (Zod schemas in `apps/web/src/lib/ai/schemas.ts`).
 
-```yaml
-# .github/workflows/ci.yml
-- Lint with ESLint
-- Type check with tsc --noEmit
-- Build all packages via Turborepo
-- Deploy to Vercel (production on master, preview on PRs)
-```
+| Capability | Model tier | Output |
+|------------|------------|--------|
+| Requirement clarification | Fast | Follow-up questions, duplicate detection notes |
+| PRD generation | Fast | Problem statement, goals, non-goals, user stories, acceptance criteria, edge cases, metrics |
+| Task generation | Fast | Kanban-ready engineering tasks with priorities |
+| Code review | Review (stronger) | Findings with severity, category, file/line, rationale, suggestions |
+| Repo context | Embeddings | Pinecone retrieval over indexed file chunks |
+
+**Model routing** (`apps/web/src/lib/ai/models.ts`):
+
+- **Fast** — PRD, tasks, clarification (`google/gemini-2.5-flash` via OpenRouter)
+- **Review** — code review (`anthropic/claude-sonnet-4.5` via OpenRouter)
+
+Verify model slugs against the [OpenRouter catalog](https://openrouter.ai/models) before deploying.
+
+The review agent evaluates:
+
+- PRD requirements and acceptance criteria
+- Engineering tasks
+- Security and performance concerns
+- Edge cases and code quality
+- Whether the implementation is production-ready
+
+Findings are categorized as **blocking** or **non-blocking** and posted as GitHub review comments.
 
 ---
 
-## Contributing
+## SaaS & billing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feat/your-feature`
-3. Commit with conventional commits: `git commit -m "feat: add X"`
-4. Push and open a Pull Request
+- **Multi-tenant workspaces** — each workspace has its own users, projects, repos, feature requests, and billing
+- **Plans** — Free, Pro (₹599/mo), Enterprise (₹1,599/mo) with usage limits on AI reviews and PRD generations
+- **Razorpay** — subscription creation and webhook handling (`/api/webhooks/razorpay`)
+- **Usage metering** — checked before AI review and PRD generation (`usage_record` monthly buckets)
 
 ---
 
-## License
+## Scripts
 
-MIT © [saurabhravte](https://github.com/saurabhravte)
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start all apps in dev mode |
+| `pnpm build` | Production build (Turborepo) |
+| `pnpm lint` | ESLint across packages |
+| `pnpm check-types` | TypeScript check |
+| `pnpm db:generate` | Generate Drizzle migration |
+| `pnpm db:migrate` | Apply migrations |
+| `pnpm db:studio` | Open Drizzle Studio |
+| `pnpm inngest:dev` | Local Inngest dev server |
+
+---
+
+## Author
+
+**Saurabh Ravte** — [GitHub](https://github.com/saurabhravte) · [LinkedIn](https://www.linkedin.com/in/saurabh-ravte/) · [X](https://x.com/iamsaurabhr)
+
+Built as a hackathon submission demonstrating AI-assisted software delivery with real GitHub integration, durable workflows, and human-in-the-loop approval.
 
 ---
 
 <div align="center">
 
-Built with ❤️ for a hackathon · Powered by Next.js, Inngest, Drizzle, and AI
-
-**[⭐ Star this repo](https://github.com/saurabhravte/shipflowAI)** if you found it useful!
+If ShipFlow AI helps your team ship faster, **[star the repo](https://github.com/saurabhravte/shipflowAI)** on GitHub.
 
 </div>
