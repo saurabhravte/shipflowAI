@@ -30,7 +30,7 @@ export default function PullRequestsOverviewPage() {
 
       <div className="flex flex-col gap-2">
         {prs?.map((pr) => (
-          <Card key={pr.id}>
+          <Card key={pr.id} className="card-hover">
             <CardContent className="flex items-center justify-between py-3">
               <div className="flex flex-col gap-0.5">
                 <span className="flex items-center gap-1.5 font-medium">

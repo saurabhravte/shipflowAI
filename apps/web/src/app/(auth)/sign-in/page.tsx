@@ -37,14 +37,12 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="items-center text-center">
-          <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-accent font-data text-sm font-bold text-accent-foreground">
-            SF
-          </div>
-          <CardTitle>Sign in to ShipFlow AI</CardTitle>
-          <CardDescription>From feature request to production.</CardDescription>
+    <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-2xl">Welcome back</CardTitle>
+          <CardDescription>
+            Sign in to keep shipping — reviewed.
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <form onSubmit={handleEmailSignIn} className="flex flex-col gap-3">
@@ -136,6 +134,5 @@ export default function SignInPage() {
           </p>
         </CardContent>
       </Card>
-    </div>
   );
 }

@@ -66,7 +66,7 @@ export default function ProjectDetailPage() {
       <div className="flex flex-col gap-2">
         {featureRequests?.map((fr) => (
           <Link key={fr.id} href={`/dashboard/feature-requests/${fr.id}`}>
-            <Card className="transition-colors hover:border-accent">
+            <Card className="card-hover">
               <CardContent className="flex items-center justify-between py-4">
                 <div className="flex flex-col gap-1">
                   <span className="font-medium">{fr.title}</span>

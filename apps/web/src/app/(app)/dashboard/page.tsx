@@ -52,7 +52,7 @@ export default function DashboardOverviewPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {projects?.map((p) => (
           <Link key={p.id} href={`/dashboard/projects/${p.id}`}>
-            <Card className="h-full transition-colors hover:border-accent">
+            <Card className="card-hover h-full">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>{p.name}</CardTitle>
