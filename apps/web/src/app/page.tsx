@@ -148,7 +148,7 @@ export default function LandingPage() {
       <section className="border-y border-border/60 bg-card/30">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-5 py-6 text-sm text-muted-foreground lg:px-8">
           <span className="font-data text-xs uppercase tracking-widest">
-            A better alternative to
+            An alternative to
           </span>
           {["CodeRabbit", "Qodo Merge", "Greptile", "Korbit"].map((n) => (
             <span

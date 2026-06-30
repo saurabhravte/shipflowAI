@@ -16,7 +16,7 @@
 
 **[🚀 Live app](https://shipflow-ai.vercel.app/)** · **[📘 Docs](https://shipflow-ai.vercel.app/docs)** · **[🐛 Report an issue](https://github.com/saurabhravte/shipflowAI/issues)**
 
-**Pitch video:** [Add link here]() · **Demo video:** [Ahttps://youtu.be/R--jPbLlYxU]()
+**[Pitch Video](https://www.youtube.com/shorts/IUWM6Zz005c)** · **[Demo Video](https://youtu.be/R--jPbLlYxU)**
 
 </div>
 
