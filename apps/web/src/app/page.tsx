@@ -395,29 +395,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ───────────────────────── Final CTA ───────────────────────── */}
-      <section className="relative overflow-hidden px-5 py-24 lg:px-8">
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[24rem] w-[48rem] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-30 blur-3xl aurora-bg" />
-        <div className="relative mx-auto flex max-w-2xl flex-col items-center text-center">
-          <h2 className="font-display text-4xl font-bold tracking-tight sm:text-6xl">
-            Ready to <span className="text-gradient-brand">ship reviewed?</span>
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            Connect a repo, bring your key, and let AI handle the busywork
-            between request and merge.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg">
-              <Link href="/sign-up">
-                Get started free <ArrowRight />
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="/docs/setup">Quick setup guide</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+  
 
       <SiteFooter />
     </div>
