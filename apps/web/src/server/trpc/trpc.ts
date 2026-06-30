@@ -70,10 +70,23 @@ const isWorkspaceMember = middleware(async ({ ctx, next, getRawInput }) => {
       ? rawInput.workspaceId
       : undefined;
 
-  const workspaceId =
+  let workspaceId =
     requestedWorkspaceId ??
     (ctx.session as any)?.activeWorkspaceId ??
     undefined;
+
+  // Neither the request nor the session names a workspace — this is the
+  // normal case for a brand-new user (or any session created before
+  // activeWorkspaceId was ever set). Rather than hard-fail, fall back to
+  // whatever workspace the user actually belongs to, picking the oldest
+  // membership deterministically if they somehow have more than one.
+  if (!workspaceId) {
+    const fallbackMembership = await ctx.db.query.member.findFirst({
+      where: eq(member.userId, ctx.user.id),
+      orderBy: (t, { asc }) => asc(t.createdAt),
+    });
+    workspaceId = fallbackMembership?.workspaceId;
+  }
 
   if (!workspaceId) {
     throw new TRPCError({

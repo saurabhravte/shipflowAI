@@ -8,10 +8,13 @@ import { randomUUID } from "crypto";
  * so billing code never has to handle "subscription is missing" as a case —
  * see Pass 6 for how usage limits read this.
  */
-export async function createDefaultWorkspaceForUser(userId: string, displayName: string) {
+export async function createDefaultWorkspaceForUser(
+  userId: string,
+  displayName: string
+): Promise<string> {
   const slug = await uniqueSlugFor(displayName || "workspace");
 
-  await db.transaction(async (tx) => {
+  return await db.transaction(async (tx) => {
     const [ws] = await tx
       .insert(workspace)
       .values({
@@ -34,7 +37,7 @@ export async function createDefaultWorkspaceForUser(userId: string, displayName:
       status: "active",
     });
 
-    return ws;
+    return ws.id;
   });
 }
 
