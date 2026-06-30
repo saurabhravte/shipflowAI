@@ -90,7 +90,7 @@ Built as a hackathon project, ShipflowAI demonstrates how AI + event-driven work
 | Release Notes           | Draft release notes ready for GitHub Releases or Notion               |
 | Durable Background Jobs | Inngest-powered workflows that survive restarts and handle failures   |
 | Persistent Storage      | All summaries and changelogs saved to Postgres via Drizzle ORM        |
-| Authentication          | Secure auth with Clerk — supports GitHub, Google, email               |
+| Authentication          | Secure auth with Better Auth — GitHub, Google, and email/password, with dedicated sign-in/sign-up pages |
 | Modern UI               | Clean, responsive interface built with Tailwind CSS + shadcn/ui       |
 
 ---
@@ -119,7 +119,7 @@ Built as a hackathon project, ShipflowAI demonstrates how AI + event-driven work
 
 | Technology                                          | Purpose                                               |
 | --------------------------------------------------- | ----------------------------------------------------- |
-| [Clerk](https://clerk.com/)                         | Authentication — GitHub OAuth, Google, email/password |
+| [Better Auth](https://www.better-auth.com/)         | Authentication — GitHub OAuth, Google OAuth, email/password           |
 | [GitHub REST API](https://docs.github.com/en/rest)  | Repository data, commits, PRs, releases               |
 | [OpenAI / Claude API](https://platform.openai.com/) | LLM inference for summaries and changelogs            |
 
@@ -148,7 +148,7 @@ Built as a hackathon project, ShipflowAI demonstrates how AI + event-driven work
 └───────────┬───────────────────────┬─────────────────────┘
             │                       │
      ┌──────▼──────┐         ┌──────▼──────────────────┐
-     │  Clerk Auth  │         │   Inngest SDK (trigger) │
+     │  Better Auth  │         │   Inngest SDK (trigger) │
      │  (JWT/Session)│        │   sends events →        │
      └─────────────┘         └──────────┬──────────────┘
                                          │
@@ -207,7 +207,7 @@ shipflowAI/
 │       │   │       └── summarize-pr.ts
 │       │   ├── github.ts       # GitHub API helpers
 │       │   └── ai.ts           # AI inference helpers
-│       └── middleware.ts       # Clerk auth middleware
+│       └── middleware.ts       # Better Auth session check (redirect-if-unauthenticated)
 │
 ├── packages/
 │   ├── ui/                     # Shared React component library
@@ -304,21 +304,21 @@ Create `apps/web/.env.local` with the following:
 # ─── Database ────────────────────────────────────────────────────────────────
 DATABASE_URL="postgresql://user:password@host:5432/shipflowai"
 
-# ─── Clerk Authentication ────────────────────────────────────────────────────
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
-CLERK_SECRET_KEY="sk_test_..."
-NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
-NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/dashboard"
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/dashboard"
+# ─── Better Auth ─────────────────────────────────────────────────────────────
+BETTER_AUTH_SECRET="generate-with-openssl-rand-base64-32"
+GOOGLE_CLIENT_ID="your-google-oauth-client-id"
+GOOGLE_CLIENT_SECRET="your-google-oauth-client-secret"
+GITHUB_OAUTH_CLIENT_ID="your-github-oauth-app-client-id"
+GITHUB_OAUTH_CLIENT_SECRET="your-github-oauth-app-client-secret"
+# Note: this is a separate GitHub OAuth App from the GitHub App below —
+# login should not require granting repo permissions.
 
 # ─── Inngest ─────────────────────────────────────────────────────────────────
 INNGEST_EVENT_KEY="your-inngest-event-key"
 INNGEST_SIGNING_KEY="your-inngest-signing-key"
 
-# ─── GitHub OAuth App ────────────────────────────────────────────────────────
-GITHUB_CLIENT_ID="your-github-oauth-client-id"
-GITHUB_CLIENT_SECRET="your-github-oauth-client-secret"
+# ─── GitHub App (repo access / webhooks) ─────────────────────────────────────
+GITHUB_APP_ID="your-github-app-id"
 GITHUB_WEBHOOK_SECRET="your-webhook-secret"
 
 # ─── AI Provider ─────────────────────────────────────────────────────────────
@@ -330,18 +330,22 @@ ANTHROPIC_API_KEY="sk-ant-..."
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
-| Variable                            | Required | Description                            |
-| ----------------------------------- | -------- | -------------------------------------- |
-| `DATABASE_URL`                      | ✅       | PostgreSQL connection string           |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | ✅       | Clerk public key                       |
-| `CLERK_SECRET_KEY`                  | ✅       | Clerk server-side secret               |
-| `INNGEST_EVENT_KEY`                 | ✅       | Inngest API event key                  |
-| `INNGEST_SIGNING_KEY`               | ✅       | Inngest webhook signing key            |
-| `GITHUB_CLIENT_ID`                  | ✅       | GitHub OAuth App client ID             |
-| `GITHUB_CLIENT_SECRET`              | ✅       | GitHub OAuth App secret                |
-| `GITHUB_WEBHOOK_SECRET`             | ✅       | Secret to verify webhook payloads      |
-| `OPENAI_API_KEY`                    | ✅       | OpenAI API key for LLM inference       |
-| `ANTHROPIC_API_KEY`                 | ➖       | Alternative — Anthropic Claude API key |
+| Variable                     | Required | Description                                                              |
+| ----------------------------- | -------- | ------------------------------------------------------------------------- |
+| `DATABASE_URL`                | ✅       | PostgreSQL connection string                                              |
+| `BETTER_AUTH_SECRET`          | ✅       | Secret used to sign Better Auth sessions/cookies                          |
+| `GOOGLE_CLIENT_ID`            | ➖       | Google OAuth client ID (for "Continue with Google")                      |
+| `GOOGLE_CLIENT_SECRET`        | ➖       | Google OAuth client secret                                                |
+| `GITHUB_OAUTH_CLIENT_ID`      | ➖       | GitHub OAuth App client ID (for login, not repo access)                  |
+| `GITHUB_OAUTH_CLIENT_SECRET`  | ➖       | GitHub OAuth App secret                                                   |
+| `INNGEST_EVENT_KEY`           | ✅       | Inngest API event key                                                     |
+| `INNGEST_SIGNING_KEY`         | ✅       | Inngest webhook signing key                                               |
+| `GITHUB_APP_ID`               | ✅       | GitHub App ID (repo access/installation, separate from OAuth login app)  |
+| `GITHUB_WEBHOOK_SECRET`       | ✅       | Secret to verify webhook payloads                                        |
+| `OPENAI_API_KEY`              | ✅       | OpenAI API key for LLM inference                                         |
+| `ANTHROPIC_API_KEY`           | ➖       | Alternative — Anthropic Claude API key                                   |
+
+Email/password sign-in works out of the box with no extra config. The Google/GitHub OAuth variables above are only needed if you also want the social sign-in buttons to work.
 
 ---
 
@@ -353,11 +357,11 @@ Managed with **Drizzle ORM**. Schema lives in `apps/web/lib/db/schema.ts`.
 
 #### `users`
 
-Mirrors Clerk user data, synced via webhooks.
+Better Auth's user table — created on sign-up, updated on profile changes.
 
 ```sql
 users (
-  id          TEXT PRIMARY KEY,        -- Clerk user ID
+  id          TEXT PRIMARY KEY,        -- Better Auth user ID
   email       TEXT NOT NULL UNIQUE,
   name        TEXT,
   avatar_url  TEXT,
@@ -462,11 +466,16 @@ pnpm --filter web db:studio
    - **Authorization callback URL:** `http://localhost:3000/api/auth/callback/github`
 3. Copy the **Client ID** and **Client Secret** → add to `.env.local`
 
-### Step 2: Configure Clerk to use GitHub OAuth
+### Step 2: Add the credentials to Better Auth
 
-1. In your [Clerk Dashboard](https://dashboard.clerk.com), go to **Social Connections**
-2. Enable **GitHub** and paste the OAuth App credentials
-3. Request scopes: `repo`, `read:user`, `user:email`
+Better Auth reads OAuth credentials directly from environment variables — there's no external dashboard step. Just make sure `.env.local` has:
+
+```env
+GITHUB_OAUTH_CLIENT_ID="..."
+GITHUB_OAUTH_CLIENT_SECRET="..."
+```
+
+This is intentionally a separate OAuth App from the GitHub App used for repo access/webhooks below — logging in shouldn't require granting repo permissions, and repo access shouldn't require a specific user to have signed in via GitHub.
 
 ### Step 3: Set up a GitHub Webhook (for automatic analysis)
 

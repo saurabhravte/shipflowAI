@@ -4,34 +4,46 @@ import { useState } from "react";
 import Link from "next/link";
 import { Github, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { signIn } from "@/lib/auth-client";
+import { signUp, signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
-export default function SignInPage() {
+export default function SignUpPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [socialLoading, setSocialLoading] = useState<"google" | "github" | null>(null);
 
-  async function handleEmailSignIn(e: React.FormEvent) {
+  async function handleEmailSignUp(e: React.FormEvent) {
     e.preventDefault();
+
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+
     setIsSubmitting(true);
-    const { error } = await signIn.email({ email, password, callbackURL: "/dashboard" });
+    const { error } = await signUp.email({
+      name,
+      email,
+      password,
+      callbackURL: "/dashboard",
+    });
     if (error) {
-      toast.error(error.message ?? "Invalid email or password");
+      toast.error(error.message ?? "Could not create your account");
       setIsSubmitting(false);
     }
   }
 
-  async function handleSocialSignIn(provider: "google" | "github") {
+  async function handleSocialSignUp(provider: "google" | "github") {
     setSocialLoading(provider);
     const { error } = await signIn.social({ provider, callbackURL: "/dashboard" });
     if (error) {
-      toast.error(error.message ?? `Could not sign in with ${provider}`);
+      toast.error(error.message ?? `Could not sign up with ${provider}`);
       setSocialLoading(null);
     }
   }
@@ -43,11 +55,23 @@ export default function SignInPage() {
           <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-accent font-data text-sm font-bold text-accent-foreground">
             SF
           </div>
-          <CardTitle>Sign in to ShipFlow AI</CardTitle>
+          <CardTitle>Create your account</CardTitle>
           <CardDescription>From feature request to production.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <form onSubmit={handleEmailSignIn} className="flex flex-col gap-3">
+          <form onSubmit={handleEmailSignUp} className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                autoComplete="name"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -61,28 +85,22 @@ export default function SignInPage() {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs text-muted-foreground hover:text-foreground"
-                >
-                  Forgot password?
-                </Link>
-              </div>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isSubmitting}
               />
+              <p className="text-xs text-muted-foreground">At least 8 characters.</p>
             </div>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-              Sign in
+              Create account
             </Button>
           </form>
 
@@ -96,7 +114,7 @@ export default function SignInPage() {
             <Button
               variant="outline"
               disabled={socialLoading !== null}
-              onClick={() => handleSocialSignIn("google")}
+              onClick={() => handleSocialSignUp("google")}
             >
               {socialLoading === "google" ? (
                 <Loader2 className="size-4 animate-spin" />
@@ -125,7 +143,7 @@ export default function SignInPage() {
             <Button
               variant="outline"
               disabled={socialLoading !== null}
-              onClick={() => handleSocialSignIn("github")}
+              onClick={() => handleSocialSignUp("github")}
             >
               {socialLoading === "github" ? (
                 <Loader2 className="size-4 animate-spin" />
@@ -137,9 +155,9 @@ export default function SignInPage() {
           </div>
 
           <p className="text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <Link href="/sign-up" className="font-medium text-foreground underline">
-              Sign up
+            Already have an account?{" "}
+            <Link href="/sign-in" className="font-medium text-foreground underline">
+              Sign in
             </Link>
           </p>
         </CardContent>

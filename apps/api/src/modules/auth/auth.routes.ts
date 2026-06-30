@@ -1,11 +1,10 @@
 import { Router } from "express";
-import { validate } from "../../common/middleware/validate.middleware";
 import { requireAuth } from "../../common/middleware/auth.middleware";
-import { RegisterDto } from "./dto/register.dto";
-import { register, getMe } from "./auth.controller";
+import { getMe } from "./auth.controller";
 
 export const authRoutes = Router();
 
-authRoutes.post("/register", validate(RegisterDto), register);
-
+// Account creation and credential sign-in live exclusively in apps/web
+// (Better Auth + dedicated /sign-up, /sign-in pages). This API only ever
+// reads the resulting session — never issues or stores credentials itself.
 authRoutes.get("/me", requireAuth, getMe);

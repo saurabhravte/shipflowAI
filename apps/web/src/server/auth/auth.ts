@@ -22,6 +22,15 @@ export const auth = betterAuth({
     },
   }),
 
+  // Email/password is the primary credential-based path: dedicated /sign-up
+  // and /sign-in pages both use this. Social providers below are additional
+  // options, not replacements.
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: false,
+    minPasswordLength: 8,
+  },
+
   // We map workspace/member/invitation ourselves (not Better Auth's built-in
   // "organization" plugin) because our domain model needs workspace to be the
   // tenant root for billing + GitHub installation, not a generic org concept

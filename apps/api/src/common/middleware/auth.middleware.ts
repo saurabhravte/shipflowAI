@@ -1,35 +1,55 @@
 import type { Request, Response, NextFunction } from "express";
-import { verifyToken, type JwtPayload } from "../utils/jwt.utils";
+import { fromNodeHeaders } from "better-auth/node";
+import { auth } from "../../modules/auth/auth.instance";
 import { UnauthorizedError, ForbiddenError } from "../utils/apiError";
 import { db } from "@shipflow/db";
 import { member } from "@shipflow/db";
 import { eq, and } from "drizzle-orm";
 
+export interface AuthenticatedUser {
+  userId: string;
+  email: string;
+  name: string;
+  workspaceId?: string;
+}
+
 // Extend Express Request with user context
 declare global {
   namespace Express {
     interface Request {
-      user?: JwtPayload;
+      user?: AuthenticatedUser;
     }
   }
 }
 
 /**
- * Verifies the Bearer token in Authorization header.
- * Attaches decoded payload to req.user.
+ * Validates the Better Auth session cookie on the incoming request.
+ * This is the same session created by apps/web on sign-in/sign-up — there is
+ * no separate token system here, just a check against the shared session
+ * table via the Better Auth instance in auth.instance.ts.
  */
-export function requireAuth(req: Request, _res: Response, next: NextFunction): void {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith("Bearer ")) {
-    throw new UnauthorizedError("Missing or malformed Authorization header");
-  }
-
-  const token = authHeader.slice(7);
+export async function requireAuth(req: Request, _res: Response, next: NextFunction): Promise<void> {
   try {
-    req.user = verifyToken(token);
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
+
+    if (!session) {
+      throw new UnauthorizedError("Not signed in");
+    }
+
+    req.user = {
+      userId: session.user.id,
+      email: session.user.email,
+      name: session.user.name,
+    };
     next();
-  } catch {
-    throw new UnauthorizedError("Invalid or expired token");
+  } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      next(error);
+      return;
+    }
+    next(new UnauthorizedError("Invalid or expired session"));
   }
 }
 
@@ -58,12 +78,7 @@ export async function requireWorkspaceMember(
   const row = await db
     .select()
     .from(member)
-    .where(
-      and(
-        eq(member.workspaceId, workspaceId),
-        eq(member.userId, req.user.userId)
-      )
-    )
+    .where(and(eq(member.workspaceId, workspaceId), eq(member.userId, req.user.userId)))
     .limit(1);
 
   if (!row[0]) {
