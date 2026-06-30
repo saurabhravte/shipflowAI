@@ -24,18 +24,6 @@ export async function listInstallationRepositories(installationId: number) {
   }));
 }
 
-export async function getRepoTree(installationId: number, owner: string, repo: string, branch: string) {
-  const octokit = await getInstallationOctokit(installationId);
-  const { data: refData } = await octokit.rest.git.getRef({ owner, repo, ref: `heads/${branch}` });
-  const { data: tree } = await octokit.rest.git.getTree({
-    owner,
-    repo,
-    tree_sha: refData.object.sha,
-    recursive: "true",
-  });
-  return tree.tree;
-}
-
 export async function getFileContent(
   installationId: number,
   owner: string,
@@ -51,28 +39,7 @@ export async function getFileContent(
   return Buffer.from(data.content, "base64").toString("utf-8");
 }
 
-export async function listPullRequests(
-  installationId: number,
-  owner: string,
-  repo: string,
-  state: "open" | "closed" | "all" = "open",
-) {
-  const octokit = await getInstallationOctokit(installationId);
-  return octokit.paginate(octokit.rest.pulls.list, { owner, repo, state, per_page: 100 });
-}
-
 // ---- Review-pipeline-specific tools (Pass 4) ------------------------------
-
-export async function getPullRequest(
-  installationId: number,
-  owner: string,
-  repo: string,
-  pullNumber: number,
-) {
-  const octokit = await getInstallationOctokit(installationId);
-  const { data } = await octokit.rest.pulls.get({ owner, repo, pull_number: pullNumber });
-  return data;
-}
 
 /** Unified diff text for the whole PR, via GitHub's diff media type. */
 export async function getPRDiff(

@@ -4,6 +4,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@shipflow/db";
 import * as schema from "@shipflow/db/schema";
 import { createDefaultWorkspaceForUser } from "./post-signup";
+import { resolveDefaultWorkspaceId } from "./active-workspace";
 
 /**
  * Single Better Auth instance for the whole app. Imported by:
@@ -63,6 +64,23 @@ export const auth = betterAuth({
         // there's never a "no workspace" empty state to design for.
         after: async (user) => {
           await createDefaultWorkspaceForUser(user.id, user.name ?? user.email);
+        },
+      },
+    },
+    session: {
+      create: {
+        // Seed activeWorkspaceId at session creation so every freshly
+        // logged-in user already has a workspace context. Without this, the
+        // session has a null activeWorkspaceId until the user explicitly
+        // switches workspaces — which broke server routes that read it
+        // directly (e.g. /api/github/install couldn't connect a repo right
+        // after login). The user.create.after hook above has already created
+        // the default workspace by the time this runs on first sign-up.
+        before: async (session) => {
+          const activeWorkspaceId = await resolveDefaultWorkspaceId(
+            session.userId,
+          );
+          return { data: { ...session, activeWorkspaceId } };
         },
       },
     },
