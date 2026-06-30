@@ -138,10 +138,14 @@ export function RepositoriesPanel({ className }: { className?: string }) {
     [linkRepo, projectByRepo, projects],
   );
 
-  const repos = useMemo(
-    () => (repoData?.repos ?? []) as InstallableRepo[],
-    [repoData?.repos],
-  );
+  const repos = useMemo(() => {
+    const list = (repoData?.repos ?? []) as InstallableRepo[];
+    return [...list].sort((a, b) => {
+      const aTime = a.pushedAt ? new Date(a.pushedAt).getTime() : 0;
+      const bTime = b.pushedAt ? new Date(b.pushedAt).getTime() : 0;
+      return bTime - aTime;
+    });
+  }, [repoData?.repos]);
 
   return (
     <div className={cn("flex w-full flex-col gap-6", className)}>
@@ -172,15 +176,14 @@ export function RepositoriesPanel({ className }: { className?: string }) {
               )}
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3">
             {installation ? (
               <>
-                <Badge variant="success">
-                  <CheckCircle2 className="size-3" /> Connected
+                <Badge variant="success" className="px-3 py-1 text-sm">
+                  <CheckCircle2 className="size-4" /> Connected
                 </Badge>
                 <Button
                   variant="outline"
-                  size="sm"
                   onClick={handleResync}
                   disabled={isFetching}
                 >
@@ -316,26 +319,28 @@ export function RepositoriesPanel({ className }: { className?: string }) {
                   <div className="flex items-center gap-2 lg:shrink-0">
                     {!r.projectId && (
                       <>
-                        <select
-                          className="h-8 rounded-md border border-input bg-background px-2 text-xs"
-                          value={
-                            projectByRepo[r.githubRepoId] ??
-                            projects?.[0]?.id ??
-                            ""
-                          }
-                          onChange={(e) =>
-                            setProjectByRepo((prev) => ({
-                              ...prev,
-                              [r.githubRepoId]: e.target.value,
-                            }))
-                          }
-                        >
-                          {projects?.map((p) => (
-                            <option key={p.id} value={p.id}>
-                              {p.name}
-                            </option>
-                          ))}
-                        </select>
+                        {(projects?.length ?? 0) > 1 && (
+                          <select
+                            className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+                            value={
+                              projectByRepo[r.githubRepoId] ??
+                              projects?.[0]?.id ??
+                              ""
+                            }
+                            onChange={(e) =>
+                              setProjectByRepo((prev) => ({
+                                ...prev,
+                                [r.githubRepoId]: e.target.value,
+                              }))
+                            }
+                          >
+                            {projects?.map((p) => (
+                              <option key={p.id} value={p.id}>
+                                {p.name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
                         <Button
                           size="sm"
                           disabled={linkRepo.isPending || !projects?.length}

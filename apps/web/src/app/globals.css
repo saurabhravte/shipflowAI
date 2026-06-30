@@ -17,21 +17,23 @@
 */
 
 :root {
-  /* Light mode — warm cream canvas (easy on the eyes), soft ink */
-  --background: oklch(0.978 0.008 88);
-  --foreground: oklch(0.22 0.006 88);
+  /* Light mode — warm cream canvas (easy on the eyes), soft ink.
+     Whites are intentionally toned down to a warm off-white so large
+     surfaces don't glare. Hue ~85 keeps everything gently warm. */
+  --background: oklch(0.963 0.014 85);
+  --foreground: oklch(0.22 0.008 85);
 
-  --card: oklch(0.992 0.006 88);
-  --card-foreground: oklch(0.22 0.006 88);
-  --popover: oklch(0.995 0.005 88);
-  --popover-foreground: oklch(0.22 0.006 88);
+  --card: oklch(0.982 0.012 85);
+  --card-foreground: oklch(0.22 0.008 85);
+  --popover: oklch(0.985 0.011 85);
+  --popover-foreground: oklch(0.22 0.008 85);
 
-  --border: oklch(0.9 0.008 88);
-  --input: oklch(0.91 0.008 88);
-  --muted: oklch(0.955 0.009 88);
-  --muted-foreground: oklch(0.42 0.012 88);
-  --secondary: oklch(0.948 0.01 88);
-  --secondary-foreground: oklch(0.28 0.006 88);
+  --border: oklch(0.892 0.012 85);
+  --input: oklch(0.902 0.012 85);
+  --muted: oklch(0.946 0.014 85);
+  --muted-foreground: oklch(0.42 0.014 85);
+  --secondary: oklch(0.94 0.015 85);
+  --secondary-foreground: oklch(0.28 0.008 85);
 
   /* The single vibrant hue: warm teal (no blue/purple). */
   --accent: oklch(0.55 0.14 175);
