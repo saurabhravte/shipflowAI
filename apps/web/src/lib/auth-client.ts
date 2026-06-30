@@ -5,7 +5,6 @@ export const authClient = createAuthClient({
   fetchOptions: {
     onRequest(context) {
       console.log("Better Auth request URL:", context.url);
-      console.log("Better Auth request path:", context.path);
     },
   },
 });
