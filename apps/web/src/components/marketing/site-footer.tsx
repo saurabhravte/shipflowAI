@@ -1,82 +1,79 @@
 import Link from "next/link";
-import { Github } from "lucide-react";
+import { Github, Linkedin, Twitter, Mail } from "lucide-react";
 import { Logo } from "@/components/logo";
 
-const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
+const NAV_LINKS: { label: string; href: string }[] = [
+  { label: "Features", href: "/#features" },
+  { label: "How it works", href: "/#how" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "FAQ", href: "/#faq" },
+  { label: "Docs", href: "/docs" },
+  { label: "Dashboard", href: "/dashboard" },
+];
+
+const SOCIALS: { label: string; href: string; icon: typeof Github }[] = [
+  { label: "Twitter", href: "https://x.com/iamsaurabhr", icon: Twitter },
   {
-    title: "Product",
-    links: [
-      { label: "Features", href: "/#features" },
-      { label: "How it works", href: "/#how" },
-      { label: "Pricing", href: "/#pricing" },
-      { label: "FAQ", href: "/#faq" },
-    ],
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/saurabh-ravte/",
+    icon: Linkedin,
   },
   {
-    title: "Docs",
-    links: [
-      { label: "Overview", href: "/docs" },
-      { label: "Bring your own key", href: "/docs/bring-your-own-key" },
-      { label: "Quick setup", href: "/docs/setup" },
-    ],
+    label: "GitHub",
+    href: "https://github.com/saurabhravte/shipflowAI",
+    icon: Github,
   },
-  {
-    title: "Account",
-    links: [
-      { label: "Sign in", href: "/sign-in" },
-      { label: "Create account", href: "/sign-up" },
-      { label: "Dashboard", href: "/dashboard" },
-    ],
-  },
+  { label: "Email", href: "mailto:saurabh.ravte@gmail.com", icon: Mail },
 ];
 
 export function SiteFooter() {
   return (
     <footer className="relative border-t border-border/60 bg-background">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-10 px-5 py-14 md:grid-cols-5 lg:px-8">
-        <div className="col-span-2 flex flex-col gap-4">
-          <Link href="/" className="group inline-flex w-fit items-center">
+      <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        {/* Centered brand + nav */}
+        <div className="flex flex-col items-center gap-6 py-14">
+          <Link href="/" className="group inline-flex items-center">
             <Logo size="md" />
           </Link>
-          <p className="max-w-xs text-sm text-muted-foreground">
-            AI code review and an autonomous shipping pipeline — from raw
-            feature request to a reviewed, merged pull request.
-          </p>
-          <a
-            href="https://github.com/saurabhravte/shipflowAI"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex w-fit items-center gap-2 rounded-[0.6rem] border border-border/70 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-accent/60 hover:text-foreground"
-          >
-            <Github className="size-4" /> View on GitHub
-          </a>
+
+          <nav className="flex flex-wrap items-center justify-center gap-x-7 gap-y-3">
+            {NAV_LINKS.map((l) => (
+              <Link
+                key={l.label}
+                href={l.href}
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
         </div>
 
-        {COLUMNS.map((col) => (
-          <div key={col.title} className="flex flex-col gap-3">
-            <h4 className="font-display text-sm font-semibold text-foreground">
-              {col.title}
-            </h4>
-            <ul className="flex flex-col gap-2">
-              {col.links.map((l) => (
-                <li key={l.label}>
-                  <Link
-                    href={l.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-accent"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+        {/* Dotted divider */}
+        <div className="border-t border-dashed border-border/70" />
 
-      <div className="border-t border-border/60">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-5 py-6 text-xs text-muted-foreground sm:flex-row lg:px-8">
-          <p>© {new Date().getFullYear()} ShipFlow AI. All rights reserved.</p>
-          <p className="font-data">Ship, reviewed.</p>
+        {/* Copyright + socials */}
+        <div className="flex flex-col items-center justify-between gap-4 py-6 sm:flex-row">
+          <p className="text-xs text-muted-foreground">
+            © {new Date().getFullYear()} ShipFlow AI. All rights reserved.
+          </p>
+          <div className="flex items-center gap-2">
+            {SOCIALS.map((s) => {
+              const Icon = s.icon;
+              return (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={s.label}
+                  className="flex size-9 items-center justify-center rounded-[0.6rem] border border-border/70 text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+                >
+                  <Icon className="size-4" />
+                </a>
+              );
+            })}
+          </div>
         </div>
       </div>
     </footer>

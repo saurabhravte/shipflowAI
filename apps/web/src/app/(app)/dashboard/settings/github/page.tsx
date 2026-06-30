@@ -13,14 +13,7 @@ export default function GitHubSettingsPage() {
   const { data: repoData, isLoading } = useQuery(trpc.github.listInstallableRepos.queryOptions());
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">GitHub integration</h1>
-        <p className="text-sm text-muted-foreground">
-          Connect a GitHub account or organization to track pull requests and run AI reviews.
-        </p>
-      </div>
-
+    <div className="flex max-w-2xl flex-col gap-6">
       <Card>
         <CardContent className="flex items-center justify-between py-5">
           <div className="flex items-center gap-3">

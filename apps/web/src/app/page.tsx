@@ -130,7 +130,7 @@ export default function LandingPage() {
 
             <p className="mt-5 flex items-center gap-2 text-xs text-muted-foreground">
               <Github className="size-3.5" />
-              Open source · Bring your own key · No credit card to start
+              Open source · Bring your own key
             </p>
           </div>
 

@@ -3,11 +3,12 @@
 /*
   ShipFlow AI — design system
   ---------------------------------------------------------------------------
-  Palette inspired by Aceternity UI: deep near-black canvas, cool neutral
-  greys, and a vivid violet/indigo accent pulled from the ShipFlow logo
-  (#5b1bd6). Dark mode is the primary aesthetic; light mode is a clean,
-  high-contrast counterpart. Colors are expressed in OKLCH for perceptual
-  consistency across the ramp.
+  A black & white system. Surfaces are pure neutral greys; light mode uses a
+  warm off-white canvas while dark mode is a warm near-black. A single vibrant
+  blue is the only saturated hue — used sparingly for highlights, active
+  states, and small graphical accents to add energy without noise. Charts
+  carry a small multi-hue (non-purple) palette for data viz. No purple/indigo,
+  no multi-color gradients. Colors are OKLCH for perceptual consistency.
 
   Typography hierarchy:
     --font-display  Manrope     headings / display
@@ -16,49 +17,54 @@
 */
 
 :root {
-  /* Light mode */
-  --background: oklch(0.99 0.003 285);
-  --foreground: oklch(0.18 0.02 285);
+  /* Light mode — warm off-white canvas, near-black ink */
+  --background: oklch(0.992 0.004 83);
+  --foreground: oklch(0.205 0.004 83);
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.02 285);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 285);
+  --card: oklch(1 0.002 83);
+  --card-foreground: oklch(0.205 0.004 83);
+  --popover: oklch(1 0.002 83);
+  --popover-foreground: oklch(0.205 0.004 83);
 
-  --border: oklch(0.9 0.008 285);
-  --input: oklch(0.9 0.008 285);
-  --muted: oklch(0.96 0.005 285);
-  --muted-foreground: oklch(0.5 0.015 285);
-  --secondary: oklch(0.96 0.006 285);
-  --secondary-foreground: oklch(0.22 0.02 285);
+  --border: oklch(0.9 0.004 83);
+  --input: oklch(0.9 0.004 83);
+  --muted: oklch(0.965 0.004 83);
+  --muted-foreground: oklch(0.5 0.005 83);
+  --secondary: oklch(0.965 0.004 83);
+  --secondary-foreground: oklch(0.25 0.004 83);
 
-  --accent: oklch(0.54 0.23 292);
-  --accent-foreground: oklch(0.99 0.005 285);
-  --primary: var(--accent);
-  --primary-foreground: var(--accent-foreground);
-  --ring: oklch(0.54 0.23 292);
+  /* Monochrome primary keeps every button the same the whole app over. */
+  --primary: oklch(0.22 0.004 83);
+  --primary-foreground: oklch(0.985 0.004 83);
+
+  /* The single vibrant hue: a crisp blue (no purple/indigo). */
+  --accent: oklch(0.58 0.18 245);
+  --accent-foreground: oklch(0.99 0.01 245);
+  --ring: oklch(0.58 0.18 245);
 
   --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(0.99 0.005 285);
+  --destructive-foreground: oklch(0.99 0.005 83);
   --success: oklch(0.6 0.15 155);
-  --success-foreground: oklch(0.99 0.005 285);
+  --success-foreground: oklch(0.99 0.005 83);
   --warning: oklch(0.78 0.16 80);
   --warning-foreground: oklch(0.24 0.04 80);
 
-  --chart-1: oklch(0.54 0.23 292);
-  --chart-2: oklch(0.6 0.16 230);
-  --chart-3: oklch(0.7 0.15 190);
-  --chart-4: oklch(0.6 0.15 155);
-  --chart-5: oklch(0.78 0.16 80);
+  /* Data-viz palette — vibrant but no purple/indigo. */
+  --chart-1: oklch(0.58 0.18 245);
+  --chart-2: oklch(0.7 0.13 195);
+  --chart-3: oklch(0.65 0.16 150);
+  --chart-4: oklch(0.78 0.16 80);
+  --chart-5: oklch(0.62 0.2 25);
 
-  /* Aceternity-style accent ramp for gradients / glows */
-  --brand-50: oklch(0.97 0.02 292);
-  --brand-400: oklch(0.66 0.2 292);
-  --brand-500: oklch(0.58 0.23 292);
-  --brand-600: oklch(0.52 0.24 292);
-  --brand-indigo: oklch(0.58 0.2 270);
-  --brand-blue: oklch(0.62 0.18 245);
-  --brand-cyan: oklch(0.72 0.13 200);
+  /* Brand ramp kept as aliases so legacy classes resolve — all map to the
+     single blue accent (no gradients, no purple). */
+  --brand-50: oklch(0.97 0.02 245);
+  --brand-400: oklch(0.64 0.16 245);
+  --brand-500: oklch(0.58 0.18 245);
+  --brand-600: oklch(0.52 0.18 245);
+  --brand-indigo: oklch(0.58 0.18 245);
+  --brand-blue: oklch(0.58 0.18 245);
+  --brand-cyan: oklch(0.7 0.13 195);
 
   --radius: 0.7rem;
 
@@ -68,48 +74,49 @@
 }
 
 .dark {
-  /* Dark mode (primary aesthetic) */
-  --background: oklch(0.16 0.012 285);
-  --foreground: oklch(0.97 0.005 285);
+  /* Dark mode — warm near-black canvas, warm white ink */
+  --background: oklch(0.16 0.003 83);
+  --foreground: oklch(0.965 0.005 83);
 
-  --card: oklch(0.2 0.014 285);
-  --card-foreground: oklch(0.97 0.005 285);
-  --popover: oklch(0.19 0.014 285);
-  --popover-foreground: oklch(0.97 0.005 285);
+  --card: oklch(0.198 0.003 83);
+  --card-foreground: oklch(0.965 0.005 83);
+  --popover: oklch(0.19 0.003 83);
+  --popover-foreground: oklch(0.965 0.005 83);
 
-  --border: oklch(0.3 0.012 285);
-  --input: oklch(0.3 0.012 285);
-  --muted: oklch(0.24 0.012 285);
-  --muted-foreground: oklch(0.7 0.012 285);
-  --secondary: oklch(0.26 0.012 285);
-  --secondary-foreground: oklch(0.97 0.005 285);
+  --border: oklch(0.29 0.003 83);
+  --input: oklch(0.29 0.003 83);
+  --muted: oklch(0.24 0.003 83);
+  --muted-foreground: oklch(0.7 0.004 83);
+  --secondary: oklch(0.26 0.003 83);
+  --secondary-foreground: oklch(0.965 0.005 83);
 
-  --accent: oklch(0.66 0.22 292);
-  --accent-foreground: oklch(0.16 0.012 285);
-  --primary: var(--accent);
-  --primary-foreground: oklch(0.99 0.005 285);
-  --ring: oklch(0.66 0.22 292);
+  --primary: oklch(0.965 0.005 83);
+  --primary-foreground: oklch(0.18 0.003 83);
+
+  --accent: oklch(0.66 0.16 245);
+  --accent-foreground: oklch(0.99 0.01 245);
+  --ring: oklch(0.66 0.16 245);
 
   --destructive: oklch(0.64 0.21 25);
-  --destructive-foreground: oklch(0.99 0.005 285);
+  --destructive-foreground: oklch(0.99 0.005 83);
   --success: oklch(0.7 0.15 155);
   --success-foreground: oklch(0.16 0.02 155);
   --warning: oklch(0.82 0.16 80);
   --warning-foreground: oklch(0.2 0.03 80);
 
-  --chart-1: oklch(0.7 0.2 292);
-  --chart-2: oklch(0.66 0.16 230);
-  --chart-3: oklch(0.74 0.13 190);
-  --chart-4: oklch(0.7 0.15 155);
-  --chart-5: oklch(0.82 0.16 80);
+  --chart-1: oklch(0.66 0.16 245);
+  --chart-2: oklch(0.74 0.13 195);
+  --chart-3: oklch(0.7 0.15 150);
+  --chart-4: oklch(0.82 0.16 80);
+  --chart-5: oklch(0.66 0.2 25);
 
-  --brand-50: oklch(0.97 0.02 292);
-  --brand-400: oklch(0.72 0.2 292);
-  --brand-500: oklch(0.66 0.22 292);
-  --brand-600: oklch(0.6 0.23 292);
-  --brand-indigo: oklch(0.66 0.2 270);
-  --brand-blue: oklch(0.68 0.18 245);
-  --brand-cyan: oklch(0.78 0.13 200);
+  --brand-50: oklch(0.97 0.02 245);
+  --brand-400: oklch(0.72 0.15 245);
+  --brand-500: oklch(0.66 0.16 245);
+  --brand-600: oklch(0.6 0.17 245);
+  --brand-indigo: oklch(0.66 0.16 245);
+  --brand-blue: oklch(0.66 0.16 245);
+  --brand-cyan: oklch(0.74 0.13 195);
 }
 
 @theme inline {
@@ -260,17 +267,9 @@
     font-family: var(--font-display);
   }
 
-  /* Gradient text used across hero + section headings */
+  /* Emphasised heading word — solid vibrant accent (no gradient). */
   .text-gradient-brand {
-    background-image: linear-gradient(
-      100deg,
-      var(--brand-400),
-      var(--brand-blue) 45%,
-      var(--brand-cyan)
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--accent);
   }
 
   /* Faint grid backdrop (Aceternity-style) */
@@ -288,25 +287,13 @@
     background-size: 22px 22px;
   }
 
-  /* Animated aurora blob backdrop */
+  /* Soft single-hue accent glow (no multi-color gradient). */
   .aurora-bg {
     background: radial-gradient(
-        40% 60% at 20% 20%,
-        color-mix(in oklch, var(--brand-500) 55%, transparent),
-        transparent 60%
-      ),
-      radial-gradient(
-        40% 60% at 80% 30%,
-        color-mix(in oklch, var(--brand-blue) 50%, transparent),
-        transparent 60%
-      ),
-      radial-gradient(
-        50% 60% at 50% 80%,
-        color-mix(in oklch, var(--brand-cyan) 40%, transparent),
-        transparent 60%
-      );
-    background-size: 200% 200%;
-    animation: var(--animate-aurora);
+      50% 60% at 50% 40%,
+      color-mix(in oklch, var(--accent) 28%, transparent),
+      transparent 70%
+    );
   }
 
   /* Card sheen on hover */
