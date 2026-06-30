@@ -16,7 +16,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <div className="pointer-events-none absolute inset-0 bg-dot opacity-[0.35]" />
         <DashboardTopbar />
         <main className="relative flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-6xl px-6 py-8 lg:px-8">{children}</div>
+          <div className="w-full px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
         </main>
       </div>
     </div>

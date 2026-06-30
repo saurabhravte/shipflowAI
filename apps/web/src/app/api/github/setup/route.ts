@@ -71,6 +71,6 @@ export async function GET(req: Request) {
     });
 
   return NextResponse.redirect(
-    new URL("/dashboard/settings/github?connected=true", req.url),
+    new URL("/dashboard/repositories?connected=true", req.url),
   );
 }

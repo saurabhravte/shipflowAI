@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, Github, CreditCard, KeyRound } from "lucide-react";
+import { User, CreditCard, KeyRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TABS = [
   { href: "/dashboard/settings", label: "Profile", icon: User },
   { href: "/dashboard/settings/api-keys", label: "API keys", icon: KeyRound },
-  { href: "/dashboard/settings/github", label: "GitHub", icon: Github },
   { href: "/dashboard/settings/billing", label: "Billing", icon: CreditCard },
 ];
 
@@ -24,7 +23,7 @@ export default function SettingsLayout({
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground">
-          Profile, your own API key, GitHub repos, and billing — all in one place.
+          Profile, API keys, and billing — all in one place.
         </p>
       </div>
 

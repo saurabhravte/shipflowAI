@@ -8,6 +8,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import type { AppRouter } from "@/server/trpc/root";
 import { TRPCProvider } from "@/lib/trpc";
+import { SessionKeeper } from "@/components/session-keeper";
 
 function getBaseUrl() {
   if (typeof window !== "undefined") return ""; // browser: relative URL
@@ -20,8 +21,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 30_000,
+            staleTime: 60_000,
+            gcTime: 5 * 60_000,
             refetchOnWindowFocus: false,
+            retry: 1,
           },
         },
       }),
@@ -45,6 +48,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
       <QueryClientProvider client={queryClient}>
         <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
+          <SessionKeeper />
           {children}
           <Toaster />
         </TRPCProvider>

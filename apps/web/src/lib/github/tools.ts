@@ -21,6 +21,10 @@ export async function listInstallationRepositories(installationId: number) {
     fullName: r.full_name,
     defaultBranch: r.default_branch,
     isPrivate: r.private,
+    language: r.language ?? null,
+    stars: r.stargazers_count ?? 0,
+    htmlUrl: r.html_url,
+    pushedAt: r.pushed_at ?? r.updated_at ?? null,
   }));
 }
 

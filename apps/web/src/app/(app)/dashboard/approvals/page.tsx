@@ -197,7 +197,7 @@ export default function ApprovalsPage() {
                       <p className="text-xs text-warning">
                         No repo linked —{" "}
                         <Link
-                          href="/dashboard/settings/github"
+                          href="/dashboard/repositories"
                           className="underline"
                         >
                           link one in GitHub settings

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Plus,
@@ -31,16 +32,48 @@ const ACTIVE_STATUSES = new Set([
 
 export default function DashboardOverviewPage() {
   const trpc = useTRPC();
-  const { data: projects, isLoading: projectsLoading } = useQuery(
-    trpc.project.list.queryOptions(),
+
+  const projectListQuery = useMemo(
+    () => trpc.project.list.queryOptions(),
+    [trpc],
   );
-  const { data: requests, isLoading: requestsLoading } = useQuery(
-    trpc.featureRequest.list.queryOptions({}),
+  const featureRequestListQuery = useMemo(
+    () => trpc.featureRequest.list.queryOptions({}),
+    [trpc],
   );
-  const { data: prs, isLoading: prsLoading } = useQuery(
-    trpc.pullRequest.listForWorkspace.queryOptions(),
+  const pullRequestListQuery = useMemo(
+    () => trpc.pullRequest.listForWorkspace.queryOptions(),
+    [trpc],
   );
-  const { data: billing } = useQuery(trpc.billing.current.queryOptions());
+  const billingQuery = useMemo(
+    () => trpc.billing.current.queryOptions(),
+    [trpc],
+  );
+  const installationQuery = useMemo(
+    () => trpc.github.installation.queryOptions(),
+    [trpc],
+  );
+
+  const { data: projects, isLoading: projectsLoading } = useQuery({
+    ...projectListQuery,
+    staleTime: 60_000,
+  });
+  const { data: requests, isLoading: requestsLoading } = useQuery({
+    ...featureRequestListQuery,
+    staleTime: 30_000,
+  });
+  const { data: prs, isLoading: prsLoading } = useQuery({
+    ...pullRequestListQuery,
+    staleTime: 30_000,
+  });
+  const { data: billing } = useQuery({
+    ...billingQuery,
+    staleTime: 120_000,
+  });
+  const { data: installation } = useQuery({
+    ...installationQuery,
+    staleTime: 120_000,
+  });
 
   const activeRequests =
     requests?.filter((r) => ACTIVE_STATUSES.has(r.status)).length ?? 0;
@@ -99,9 +132,15 @@ export default function DashboardOverviewPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button asChild variant="outline">
-            <Link href="/dashboard/settings/github">Connect GitHub</Link>
-          </Button>
+          {installation ? (
+            <Button asChild variant="outline">
+              <Link href="/dashboard/repositories">Repositories</Link>
+            </Button>
+          ) : (
+            <Button asChild variant="outline">
+              <Link href="/dashboard/repositories">Connect GitHub</Link>
+            </Button>
+          )}
           <Button asChild>
             <Link href="/dashboard/projects/new">
               <Plus /> New project
@@ -242,7 +281,7 @@ export default function DashboardOverviewPage() {
               <Link href="/dashboard/projects">View all</Link>
             </Button>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {projects.slice(0, 3).map((p) => (
               <Link key={p.id} href={`/dashboard/projects/${p.id}`}>
                 <GlowingEffect className={cn("h-full rounded-xl")}>

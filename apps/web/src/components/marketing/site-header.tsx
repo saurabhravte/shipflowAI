@@ -4,13 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X, BookOpen, KeyRound, Rocket, ChevronDown } from "lucide-react";
 import { Logo } from "@/components/logo";
-import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { href: "/#features", label: "Features" },
-  { href: "/#loop", label: "Core loop" },
   { href: "/#how", label: "How it works" },
   { href: "/#pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
@@ -129,13 +127,19 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-2 md:flex">
           <ThemeToggle />
-          <Button asChild variant="ghost" size="sm">
-                <Link href="/sign-in">Sign in</Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href="/sign-up">Get started</Link>
-              </Button>
-            </div>
+          <Link
+            href="/sign-in"
+            className="rounded-[0.6rem] px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/10 hover:text-foreground"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/sign-up"
+            className="rounded-[0.6rem] px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent/10"
+          >
+            Get started
+          </Link>
+        </div>
 
             <button
               className="flex size-10 items-center justify-center rounded-[0.65rem] text-foreground transition-colors hover:bg-accent/10 md:hidden"
@@ -191,17 +195,21 @@ export function SiteHeader() {
                 ))}
         <div className="mt-2 flex gap-2">
             <ThemeToggle className="md:hidden" />
-            <Button asChild variant="outline" className="flex-1">
-                    <Link href="/sign-in" onClick={() => setOpen(false)}>
-                      Sign in
-                    </Link>
-                  </Button>
-                  <Button asChild className="flex-1">
-                    <Link href="/sign-up" onClick={() => setOpen(false)}>
-                      Get started
-                    </Link>
-                  </Button>
-                </div>
+            <Link
+              href="/sign-in"
+              onClick={() => setOpen(false)}
+              className="flex-1 rounded-[0.6rem] border border-border/70 px-3 py-2.5 text-center text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/10 hover:text-foreground"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/sign-up"
+              onClick={() => setOpen(false)}
+              className="flex-1 rounded-[0.6rem] bg-accent/10 px-3 py-2.5 text-center text-sm font-medium text-foreground transition-colors hover:bg-accent/20"
+            >
+              Get started
+            </Link>
+          </div>
               </div>
             </div>
           </div>

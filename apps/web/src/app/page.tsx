@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -14,16 +15,16 @@ import {
   Zap,
   Github,
 } from "lucide-react";
+import { getServerSession } from "@/server/auth/session";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { PipelineFlow } from "@/components/marketing/pipeline-flow";
 import { DeliveryLoop } from "@/components/marketing/delivery-loop";
-import { CanvasText } from "@/components/marketing/canvas-text";
 import { Pricing } from "@/components/marketing/pricing";
 import { Faq } from "@/components/marketing/faq";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { HexagonPattern } from "@/components/ui/hexagon-pattern";
 
 const FEATURES = [
   {
@@ -89,15 +90,23 @@ const COMPARE = [
   { label: "Durable background workflows", us: true, them: false },
 ];
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const authSession = await getServerSession();
+  if (authSession) {
+    redirect("/dashboard");
+  }
+
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans">
+    <div className="min-h-screen bg-background font-sans text-foreground">
       <SiteHeader />
 
-      {/* ───────────────────────── Hero ───────────────────────── */}
       <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_60%,transparent_100%)]" />
-        <div className="pointer-events-none absolute left-1/2 top-[-12rem] h-[34rem] w-[60rem] -translate-x-1/2 rounded-full opacity-40 blur-3xl aurora-bg" />
+        <HexagonPattern
+          className="[mask-image:radial-gradient(ellipse_70%_55%_at_50%_0%,#000_55%,transparent_100%)]"
+          radius={28}
+          gap={6}
+        />
+        <div className="pointer-events-none absolute left-1/2 top-[-12rem] h-[34rem] w-[60rem] -translate-x-1/2 rounded-full opacity-30 blur-3xl aurora-bg" />
 
         <div className="relative mx-auto max-w-7xl px-5 pb-20 pt-12 lg:px-8 lg:pt-20">
           <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
@@ -112,24 +121,31 @@ export default function LandingPage() {
               <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
 
-            <p className="font-display mt-3 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+            <p className="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
               Review <span className="text-gradient-brand">instantly</span>
             </p>
 
-            <p className="mt-6 max-w-xl text-balance text-lg text-muted-foreground">
+            <p className="mt-6 max-w-xl text-balance text-lg leading-relaxed text-muted-foreground">
               From raw request to merged PR — AI reviews the code, humans
               approve the release.
             </p>
 
-            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <Link href="/sign-up">
-                  Start shipping <ArrowRight />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/docs">Read the docs</Link>
-              </Button>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+              <Link
+                href="/sign-up"
+                className="font-medium text-foreground underline-offset-4 transition-colors hover:text-accent hover:underline"
+              >
+                Create an account
+              </Link>
+              <span className="text-muted-foreground/50" aria-hidden>
+                ·
+              </span>
+              <Link
+                href="/docs"
+                className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+              >
+                Read the docs
+              </Link>
             </div>
 
             <p className="mt-5 flex items-center gap-2 text-xs text-muted-foreground">
@@ -144,7 +160,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ───────────────────────── Trust strip ───────────────────────── */}
       <section className="border-y border-border/60 bg-card/30">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-5 py-6 text-sm text-muted-foreground lg:px-8">
           <span className="font-data text-xs uppercase tracking-widest">
@@ -161,7 +176,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ───────────────────────── Features ───────────────────────── */}
       <section id="features" className="relative scroll-mt-20 py-24">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
@@ -172,7 +186,7 @@ export default function LandingPage() {
               Everything between{" "}
               <span className="text-gradient-brand">idea and merge</span>
             </h2>
-            <p className="mt-4 text-muted-foreground">
+            <p className="mt-4 leading-relaxed text-muted-foreground">
               Most tools review a PR after it exists. ShipFlow owns the whole
               path — and reviews it smarter when it gets there.
             </p>
@@ -204,7 +218,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ───────────────────────── Core loop (5 phases) ───────────────────────── */}
       <section
         id="loop"
         className="relative scroll-mt-24 border-y border-border/60 bg-card/20 py-24"
@@ -218,7 +231,7 @@ export default function LandingPage() {
               Request to production —{" "}
               <span className="text-gradient-brand">one pipeline</span>
             </h2>
-            <p className="mt-4 text-muted-foreground">
+            <p className="mt-4 leading-relaxed text-muted-foreground">
               Five phases. One observable loop. Click a phase or watch it cycle.
             </p>
           </div>
@@ -228,7 +241,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ───────────────────────── How it works ───────────────────────── */}
       <section id="how" className="relative scroll-mt-24 py-24">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
@@ -239,7 +251,7 @@ export default function LandingPage() {
               One loop, fully{" "}
               <span className="text-gradient-brand">observable</span>
             </h2>
-            <p className="mt-4 text-muted-foreground">
+            <p className="mt-4 leading-relaxed text-muted-foreground">
               From the first message to the merge button — here is the journey
               every feature request takes.
             </p>
@@ -259,13 +271,14 @@ export default function LandingPage() {
                     <h3 className="font-display text-base font-semibold">
                       {s.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground">{s.body}</p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {s.body}
+                    </p>
                   </div>
                 </li>
               ))}
             </ol>
 
-            {/* AI review mock card */}
             <div className="relative">
               <div className="pointer-events-none absolute -inset-4 rounded-[2rem] opacity-30 blur-2xl aurora-bg" />
               <div className="relative overflow-hidden rounded-[var(--radius-2xl)] border border-border/70 bg-background/80 shadow-2xl backdrop-blur">
@@ -285,7 +298,7 @@ export default function LandingPage() {
                     <span className="text-success">+ </span>
                     export function toCsv(rows: Row[]) &#123;
                   </p>
-                  <p className="text-muted-foreground pl-4">
+                  <p className="pl-4 text-muted-foreground">
                     <span className="text-destructive">- </span>
                     return rows.map(r =&gt; r.join(&quot;,&quot;))
                   </p>
@@ -314,7 +327,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ───────────────────────── Comparison ───────────────────────── */}
       <section className="py-24">
         <div className="mx-auto max-w-4xl px-5 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
@@ -371,34 +383,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ───────────────────────── BYOK band ───────────────────────── */}
-      <section className="px-5 lg:px-8">
-        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[var(--radius-2xl)] border border-accent/30 bg-card/40 p-8 sm:p-12">
-          <div className="pointer-events-none absolute inset-0 bg-dot opacity-40" />
-          <div className="relative flex flex-col items-start gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="max-w-xl">
-              <Badge variant="brand" className="mb-4">
-                <KeyRound className="size-3" /> Bring your own key
-              </Badge>
-              <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                Your models. Your spend. Your data.
-              </h2>
-              <p className="mt-3 text-muted-foreground">
-                ShipFlow is model-agnostic. Add your own API key, pick a fast
-                model for drafting and a strong one for review, and keep every
-                request inside your own provider boundary.
-              </p>
-            </div>
-            <Button asChild size="lg" className="shrink-0">
-              <Link href="/docs/bring-your-own-key">
-                Set up your key <ArrowRight />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────────────────── Pricing ───────────────────────── */}
       <section id="pricing" className="scroll-mt-20 py-24">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="mx-auto mb-12 max-w-2xl text-center">
@@ -409,7 +393,7 @@ export default function LandingPage() {
               Simple, <span className="text-gradient-brand">honest</span>{" "}
               pricing
             </h2>
-            <p className="mt-4 text-muted-foreground">
+            <p className="mt-4 leading-relaxed text-muted-foreground">
               Start free. Bring your own key on any plan. Upgrade when your team
               ships more.
             </p>
@@ -418,7 +402,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ───────────────────────── FAQ ───────────────────────── */}
       <section
         id="faq"
         className="scroll-mt-24 border-t border-border/60 bg-card/20 py-24"

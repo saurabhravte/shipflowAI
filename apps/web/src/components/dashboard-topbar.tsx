@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { signOut, useSession } from "@/lib/auth-client";
@@ -11,16 +12,31 @@ import { Button } from "@/components/ui/button";
 import { useTRPC } from "@/lib/trpc";
 
 export function DashboardTopbar() {
+  const router = useRouter();
   const trpc = useTRPC();
   const { data: session } = useSession();
-  const { data: connected } = useQuery(trpc.workspace.connectedAccounts.queryOptions());
+  const { data: connected } = useQuery({
+    ...trpc.workspace.connectedAccounts.queryOptions(),
+    staleTime: 120_000,
+  });
 
   const name = session?.user.name ?? "Account";
   const imageUrl =
     session?.user.image ?? connected?.providers.find((p) => p.avatarUrl)?.avatarUrl;
 
+  const handleLogout = useCallback(async () => {
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/sign-in");
+          router.refresh();
+        },
+      },
+    });
+  }, [router]);
+
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-end gap-2 border-b border-border/60 bg-background/80 px-6 backdrop-blur-xl lg:px-8">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-end gap-2 border-b border-border/60 bg-background/80 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
       <ThemeToggle />
 
       <Link
@@ -34,7 +50,7 @@ export function DashboardTopbar() {
       <Button
         variant="outline"
         size="sm"
-        onClick={() => signOut()}
+        onClick={handleLogout}
         aria-label="Log out"
       >
         <LogOut className="size-4" />

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   LayoutDashboard,
@@ -27,13 +28,13 @@ const MAIN_NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/approvals", label: "Approvals", icon: CheckSquare, badge: "pending" as const },
   { href: "/dashboard/projects", label: "Projects", icon: FolderKanban },
+  { href: "/dashboard/repositories", label: "Repositories", icon: Github },
   { href: "/dashboard/requests", label: "Requests", icon: MessageSquarePlus },
   { href: "/dashboard/pull-requests", label: "Pull requests", icon: GitPullRequest },
 ] as const;
 
 const WORKSPACE_NAV = [
   { href: "/dashboard/settings/api-keys", label: "API keys", icon: KeyRound },
-  { href: "/dashboard/settings/github", label: "GitHub", icon: Github },
   { href: "/dashboard/settings/billing", label: "Billing", icon: CreditCard },
 ] as const;
 
@@ -95,7 +96,11 @@ function NavSection({
 
 function UsageMeter() {
   const trpc = useTRPC();
-  const { data } = useQuery(trpc.billing.current.queryOptions());
+  const billingQuery = useMemo(
+    () => trpc.billing.current.queryOptions(),
+    [trpc],
+  );
+  const { data } = useQuery({ ...billingQuery, staleTime: 120_000 });
 
   if (!data || data.plan !== "free") return null;
 
@@ -127,7 +132,11 @@ function UsageMeter() {
 export function AppSidebar() {
   const pathname = usePathname();
   const trpc = useTRPC();
-  const { data: pending } = useQuery(trpc.approval.listPending.queryOptions());
+  const pendingQuery = useMemo(
+    () => trpc.approval.listPending.queryOptions(),
+    [trpc],
+  );
+  const { data: pending } = useQuery({ ...pendingQuery, staleTime: 30_000 });
 
   return (
     <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-border/60 bg-card/30">

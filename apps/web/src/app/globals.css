@@ -5,7 +5,7 @@
   ---------------------------------------------------------------------------
   A black & white system. Surfaces are pure neutral greys; light mode uses a
   warm off-white canvas while dark mode is a warm near-black. A single vibrant
-  blue is the only saturated hue — used sparingly for highlights, active
+  teal is the only saturated hue — used sparingly for highlights, active
   states, and small graphical accents to add energy without noise. Charts
   carry a small multi-hue (non-purple) palette for data viz. No purple/indigo,
   no multi-color gradients. Colors are OKLCH for perceptual consistency.
@@ -29,17 +29,17 @@
   --border: oklch(0.9 0.008 88);
   --input: oklch(0.91 0.008 88);
   --muted: oklch(0.955 0.009 88);
-  --muted-foreground: oklch(0.48 0.01 88);
+  --muted-foreground: oklch(0.42 0.012 88);
   --secondary: oklch(0.948 0.01 88);
   --secondary-foreground: oklch(0.28 0.006 88);
 
-  --primary: oklch(0.58 0.18 245);
-  --primary-foreground: oklch(0.99 0.01 245);
+  /* The single vibrant hue: warm teal (no blue/purple). */
+  --accent: oklch(0.55 0.14 175);
+  --accent-foreground: oklch(0.99 0.01 175);
+  --ring: oklch(0.55 0.14 175);
 
-  /* The single vibrant hue: a crisp blue (no purple/indigo). */
-  --accent: oklch(0.58 0.18 245);
-  --accent-foreground: oklch(0.99 0.01 245);
-  --ring: oklch(0.58 0.18 245);
+  --primary: oklch(0.55 0.14 175);
+  --primary-foreground: oklch(0.99 0.01 175);
 
   --destructive: oklch(0.58 0.22 25);
   --destructive-foreground: oklch(0.99 0.005 83);
@@ -49,7 +49,7 @@
   --warning-foreground: oklch(0.24 0.04 80);
 
   /* Data-viz palette — vibrant but no purple/indigo. */
-  --chart-1: oklch(0.58 0.18 245);
+  --chart-1: oklch(0.55 0.14 175);
   --chart-2: oklch(0.7 0.13 195);
   --chart-3: oklch(0.65 0.16 150);
   --chart-4: oklch(0.78 0.16 80);
@@ -57,12 +57,12 @@
 
   /* Brand ramp kept as aliases so legacy classes resolve — all map to the
      single blue accent (no gradients, no purple). */
-  --brand-50: oklch(0.97 0.02 245);
-  --brand-400: oklch(0.64 0.16 245);
-  --brand-500: oklch(0.58 0.18 245);
-  --brand-600: oklch(0.52 0.18 245);
-  --brand-indigo: oklch(0.58 0.18 245);
-  --brand-blue: oklch(0.58 0.18 245);
+  --brand-50: oklch(0.97 0.02 175);
+  --brand-400: oklch(0.62 0.12 175);
+  --brand-500: oklch(0.55 0.14 175);
+  --brand-600: oklch(0.48 0.14 175);
+  --brand-indigo: oklch(0.55 0.14 175);
+  --brand-blue: oklch(0.55 0.14 175);
   --brand-cyan: oklch(0.7 0.13 195);
 
   --radius: 0.7rem;
@@ -85,16 +85,16 @@
   --border: oklch(0.29 0.003 83);
   --input: oklch(0.29 0.003 83);
   --muted: oklch(0.24 0.003 83);
-  --muted-foreground: oklch(0.7 0.004 83);
+  --muted-foreground: oklch(0.72 0.006 83);
   --secondary: oklch(0.26 0.003 83);
   --secondary-foreground: oklch(0.965 0.005 83);
 
   --primary: oklch(0.965 0.005 83);
   --primary-foreground: oklch(0.18 0.003 83);
 
-  --accent: oklch(0.66 0.16 245);
-  --accent-foreground: oklch(0.99 0.01 245);
-  --ring: oklch(0.66 0.16 245);
+  --accent: oklch(0.68 0.13 175);
+  --accent-foreground: oklch(0.99 0.01 175);
+  --ring: oklch(0.68 0.13 175);
 
   --destructive: oklch(0.64 0.21 25);
   --destructive-foreground: oklch(0.99 0.005 83);
@@ -103,18 +103,18 @@
   --warning: oklch(0.82 0.16 80);
   --warning-foreground: oklch(0.2 0.03 80);
 
-  --chart-1: oklch(0.66 0.16 245);
+  --chart-1: oklch(0.68 0.13 175);
   --chart-2: oklch(0.74 0.13 195);
   --chart-3: oklch(0.7 0.15 150);
   --chart-4: oklch(0.82 0.16 80);
   --chart-5: oklch(0.66 0.2 25);
 
-  --brand-50: oklch(0.97 0.02 245);
-  --brand-400: oklch(0.72 0.15 245);
-  --brand-500: oklch(0.66 0.16 245);
-  --brand-600: oklch(0.6 0.17 245);
-  --brand-indigo: oklch(0.66 0.16 245);
-  --brand-blue: oklch(0.66 0.16 245);
+  --brand-50: oklch(0.97 0.02 175);
+  --brand-400: oklch(0.72 0.12 175);
+  --brand-500: oklch(0.68 0.13 175);
+  --brand-600: oklch(0.6 0.14 175);
+  --brand-indigo: oklch(0.68 0.13 175);
+  --brand-blue: oklch(0.68 0.13 175);
   --brand-cyan: oklch(0.74 0.13 195);
 }
 
@@ -238,6 +238,7 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    line-height: 1.6;
   }
   /* Type hierarchy — headings use the display family (Manrope),
      body copy stays in the sans family (Geist). */
