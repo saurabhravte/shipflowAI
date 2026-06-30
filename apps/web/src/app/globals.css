@@ -305,9 +305,9 @@
     transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
   }
   .card-hover:hover {
-    transform: translateY(-3px);
-    border-color: color-mix(in oklch, var(--accent) 55%, var(--border));
-    box-shadow: 0 12px 40px -16px color-mix(in oklch, var(--accent) 60%, transparent);
+    transform: translateY(-2px);
+    border-color: color-mix(in oklch, var(--foreground) 18%, var(--border));
+    box-shadow: 0 8px 24px -16px color-mix(in oklch, var(--foreground) 35%, transparent);
   }
 
   .shimmer-border {

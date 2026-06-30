@@ -26,7 +26,6 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { cn } from "@/lib/utils";
 
 type InstallableRepo = {
@@ -227,7 +226,7 @@ export function RepositoriesPanel({ className }: { className?: string }) {
             </Button>
           )}
         </CardHeader>
-        <CardContent className="flex flex-col gap-3">
+        <CardContent>
           {isLoading && (
             <p className="text-sm text-muted-foreground">Loading repositories…</p>
           )}
@@ -241,107 +240,128 @@ export function RepositoriesPanel({ className }: { className?: string }) {
               Create a project before linking repositories.
             </p>
           )}
-          {repos.map((r) => (
-            <GlowingEffect key={r.githubRepoId} className="rounded-lg">
-              <div className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex min-w-0 flex-1 items-start gap-3">
-                  <UserAvatar
-                    name={r.owner}
-                    imageUrl={`https://github.com/${r.owner}.png`}
-                    size="sm"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <a
-                        href={r.htmlUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="group inline-flex items-center gap-1.5 truncate font-data text-sm font-medium transition-colors hover:text-accent"
-                      >
+          {repos.length > 0 && (
+            <div className="overflow-hidden rounded-lg border">
+              {repos.map((r, index) => (
+                <div
+                  key={r.githubRepoId}
+                  className={cn(
+                    "flex flex-col gap-3 px-4 py-3.5 transition-colors hover:bg-muted/40 lg:flex-row lg:items-center lg:gap-4",
+                    index !== 0 && "border-t",
+                  )}
+                >
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
+                    <UserAvatar
+                      name={r.owner}
+                      imageUrl={`https://github.com/${r.owner}.png`}
+                      size="sm"
+                    />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={r.htmlUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="group inline-flex items-center gap-1.5 truncate text-sm font-semibold transition-colors hover:text-accent"
+                        >
+                          {r.name}
+                          <ExternalLink className="size-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-60" />
+                        </a>
+                        {r.projectId ? (
+                          <Badge variant="success">Linked</Badge>
+                        ) : null}
+                      </div>
+                      <p className="truncate font-data text-xs text-muted-foreground">
                         {r.fullName}
-                        <ExternalLink className="size-3.5 shrink-0 opacity-50 transition-opacity group-hover:opacity-100" />
-                      </a>
-                      {r.projectId ? (
-                        <Badge variant="success">Linked</Badge>
-                      ) : null}
-                    </div>
-                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                      <span className="inline-flex items-center gap-1">
-                        <GitBranch className="size-3" />
-                        {r.defaultBranch}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        {r.isPrivate ? (
-                          <>
-                            <Lock className="size-3" /> Private
-                          </>
-                        ) : (
-                          <>
-                            <Globe className="size-3" /> Public
-                          </>
-                        )}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Star className="size-3" />
-                        {r.stars.toLocaleString()}
-                      </span>
-                      {r.language && (
-                        <span className="inline-flex items-center gap-1.5">
-                          <span className="size-2 rounded-full bg-accent" />
-                          {r.language}
-                        </span>
-                      )}
-                      <span className="inline-flex items-center gap-1">
-                        <Clock className="size-3" />
-                        {formatRelativeTime(r.pushedAt)}
-                      </span>
+                      </p>
                     </div>
                   </div>
+
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground lg:w-auto lg:justify-end">
+                    <Badge variant={r.isPrivate ? "warning" : "secondary"}>
+                      {r.isPrivate ? (
+                        <>
+                          <Lock className="size-3" /> Private
+                        </>
+                      ) : (
+                        <>
+                          <Globe className="size-3" /> Public
+                        </>
+                      )}
+                    </Badge>
+                    <span className="inline-flex w-20 items-center gap-1.5 truncate">
+                      <GitBranch className="size-3 shrink-0" />
+                      {r.defaultBranch}
+                    </span>
+                    <span className="inline-flex w-28 items-center gap-1.5">
+                      {r.language ? (
+                        <>
+                          <span className="size-2 shrink-0 rounded-full bg-accent" />
+                          {r.language}
+                        </>
+                      ) : (
+                        <span className="text-muted-foreground/60">—</span>
+                      )}
+                    </span>
+                    <span className="inline-flex w-12 items-center gap-1">
+                      <Star className="size-3 shrink-0" />
+                      {r.stars.toLocaleString()}
+                    </span>
+                    <span className="inline-flex w-20 items-center gap-1 tabular-nums">
+                      <Clock className="size-3 shrink-0" />
+                      {formatRelativeTime(r.pushedAt)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 lg:shrink-0">
+                    {!r.projectId && (
+                      <>
+                        <select
+                          className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+                          value={
+                            projectByRepo[r.githubRepoId] ??
+                            projects?.[0]?.id ??
+                            ""
+                          }
+                          onChange={(e) =>
+                            setProjectByRepo((prev) => ({
+                              ...prev,
+                              [r.githubRepoId]: e.target.value,
+                            }))
+                          }
+                        >
+                          {projects?.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name}
+                            </option>
+                          ))}
+                        </select>
+                        <Button
+                          size="sm"
+                          disabled={linkRepo.isPending || !projects?.length}
+                          onClick={() => onLink(r)}
+                        >
+                          <Link2 className="size-4" />
+                          Link
+                        </Button>
+                      </>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleResync}
+                      disabled={isFetching}
+                    >
+                      <RefreshCw
+                        className={cn("size-3.5", isFetching && "animate-spin")}
+                      />
+                      Sync
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 lg:shrink-0">
-                  {!r.projectId && (
-                    <>
-                      <select
-                        className="h-9 rounded-md border border-input bg-background px-3 text-sm"
-                        value={projectByRepo[r.githubRepoId] ?? projects?.[0]?.id ?? ""}
-                        onChange={(e) =>
-                          setProjectByRepo((prev) => ({
-                            ...prev,
-                            [r.githubRepoId]: e.target.value,
-                          }))
-                        }
-                      >
-                        {projects?.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
-                      <Button
-                        size="sm"
-                        disabled={linkRepo.isPending || !projects?.length}
-                        onClick={() => onLink(r)}
-                      >
-                        <Link2 className="size-4" />
-                        Link
-                      </Button>
-                    </>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleResync}
-                    disabled={isFetching}
-                  >
-                    <RefreshCw
-                      className={cn("size-3.5", isFetching && "animate-spin")}
-                    />
-                    Resync
-                  </Button>
-                </div>
-              </div>
-            </GlowingEffect>
-          ))}
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
