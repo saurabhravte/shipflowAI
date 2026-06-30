@@ -105,22 +105,20 @@ export default function LandingPage() {
               href="/docs"
               className="group mb-6 inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur transition-colors hover:border-accent/60 hover:text-foreground"
             >
-              <Badge variant="brand" className="px-2 py-0">New</Badge>
+              <Badge variant="brand" className="px-2 py-0">
+                New
+              </Badge>
               Repo-aware AI review, now with your own API key
               <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
 
-            <h1 className="font-display text-6xl font-bold leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl">
-              Ship <CanvasText className="text-6xl sm:text-7xl lg:text-8xl">reviewed.</CanvasText>
-            </h1>
-
             <p className="font-display mt-3 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Review, <span className="text-gradient-brand">instantly</span>
+              Review <span className="text-gradient-brand">instantly</span>
             </p>
 
             <p className="mt-6 max-w-xl text-balance text-lg text-muted-foreground">
-              From raw request to merged PR — AI reviews the code, humans approve
-              the release.
+              From raw request to merged PR — AI reviews the code, humans
+              approve the release.
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
@@ -153,7 +151,10 @@ export default function LandingPage() {
             A better alternative to
           </span>
           {["CodeRabbit", "Qodo Merge", "Greptile", "Korbit"].map((n) => (
-            <span key={n} className="font-display font-semibold text-foreground/80">
+            <span
+              key={n}
+              className="font-display font-semibold text-foreground/80"
+            >
               {n}
             </span>
           ))}
@@ -181,12 +182,17 @@ export default function LandingPage() {
             {FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <GlowingEffect key={f.title} className="rounded-[var(--radius-2xl)]">
+                <GlowingEffect
+                  key={f.title}
+                  className="rounded-[var(--radius-2xl)]"
+                >
                   <div className="flex flex-col gap-4 p-6">
                     <span className="flex size-11 items-center justify-center rounded-[0.7rem] bg-accent/10 text-accent ring-1 ring-accent/20 transition-colors group-hover/glow:bg-accent group-hover/glow:text-accent-foreground">
                       <Icon className="size-5" />
                     </span>
-                    <h3 className="font-display text-lg font-semibold">{f.title}</h3>
+                    <h3 className="font-display text-lg font-semibold">
+                      {f.title}
+                    </h3>
                     <p className="text-sm leading-relaxed text-muted-foreground">
                       {f.body}
                     </p>
@@ -199,7 +205,10 @@ export default function LandingPage() {
       </section>
 
       {/* ───────────────────────── Core loop (5 phases) ───────────────────────── */}
-      <section id="loop" className="relative scroll-mt-24 border-y border-border/60 bg-card/20 py-24">
+      <section
+        id="loop"
+        className="relative scroll-mt-24 border-y border-border/60 bg-card/20 py-24"
+      >
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <Badge variant="brand" className="mb-4">
@@ -347,7 +356,9 @@ export default function LandingPage() {
                       <Check className="size-3.5" />
                     </span>
                   ) : row.them === "partial" ? (
-                    <span className="font-data text-xs text-warning">partial</span>
+                    <span className="font-data text-xs text-warning">
+                      partial
+                    </span>
                   ) : (
                     <span className="flex size-6 items-center justify-center rounded-full bg-muted text-muted-foreground">
                       <X className="size-3.5" />
@@ -395,7 +406,8 @@ export default function LandingPage() {
               Pricing
             </Badge>
             <h2 className="font-display text-4xl font-bold tracking-tight sm:text-5xl">
-              Simple, <span className="text-gradient-brand">honest</span> pricing
+              Simple, <span className="text-gradient-brand">honest</span>{" "}
+              pricing
             </h2>
             <p className="mt-4 text-muted-foreground">
               Start free. Bring your own key on any plan. Upgrade when your team
@@ -406,10 +418,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-  
-
       {/* ───────────────────────── FAQ ───────────────────────── */}
-      <section id="faq" className="scroll-mt-24 border-t border-border/60 bg-card/20 py-24">
+      <section
+        id="faq"
+        className="scroll-mt-24 border-t border-border/60 bg-card/20 py-24"
+      >
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="mx-auto mb-12 max-w-2xl text-center">
             <Badge variant="brand" className="mb-4">
@@ -422,8 +435,6 @@ export default function LandingPage() {
           <Faq />
         </div>
       </section>
-
-  
 
       <SiteFooter />
     </div>
