@@ -6,9 +6,7 @@
 
 ### Ship reviewed. Review, instantly.
 
-**AI-assisted product delivery — from feature request to reviewed, approved pull request.**
-
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-shipflow--ai.vercel.app-0066FF?style=for-the-badge&logo=vercel&logoColor=white)](https://shipflow-ai.vercel.app/)
+**AI-assisted product delivery from feature request to reviewed, approved pull request.**
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
@@ -18,7 +16,7 @@
 
 **[🚀 Live app](https://shipflow-ai.vercel.app/)** · **[📘 Docs](https://shipflow-ai.vercel.app/docs)** · **[🐛 Report an issue](https://github.com/saurabhravte/shipflowAI/issues)**
 
-**Pitch video:** [Add link here]() · **Demo video:** [Add link here]()
+**Pitch video:** [Add link here]() · **Demo video:** [Ahttps://youtu.be/R--jPbLlYxU]()
 
 </div>
 
