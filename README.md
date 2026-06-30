@@ -1,22 +1,26 @@
 <div align="center">
 
+<img src="apps/web/public/logo.png" alt="ShipFlow AI" width="88" />
+
 # ShipFlow AI
 
 ### Ship reviewed. Review, instantly.
 
 **AI-assisted product delivery — from feature request to reviewed, approved pull request.**
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-shipflow--ai.vercel.app-0066FF?style=for-the-badge)](https://shipflow-ai.vercel.app/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js_16-000?style=flat-square&logo=nextdotjs)](https://nextjs.org/)
-[![tRPC](https://img.shields.io/badge/tRPC-11-398CCB?style=flat-square)](https://trpc.io/)
-[![Inngest](https://img.shields.io/badge/Inngest-workflows-000?style=flat-square)](https://www.inngest.com/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-shipflow--ai.vercel.app-0066FF?style=for-the-badge&logo=vercel&logoColor=white)](https://shipflow-ai.vercel.app/)
 
-**[Live app](https://shipflow-ai.vercel.app/)** · **[Docs](https://shipflow-ai.vercel.app/docs)** · **[Report an issue](https://github.com/saurabhravte/shipflowAI/issues)**
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![tRPC](https://img.shields.io/badge/tRPC-11-398CCB?style=flat-square&logo=trpc&logoColor=white)](https://trpc.io/)
+[![Inngest](https://img.shields.io/badge/Inngest-durable_workflows-000000?style=flat-square)](https://www.inngest.com/)
+[![Drizzle](https://img.shields.io/badge/Drizzle-PostgreSQL-C5F74F?style=flat-square&logo=postgresql&logoColor=black)](https://orm.drizzle.team/)
+
+**[🚀 Live app](https://shipflow-ai.vercel.app/)** · **[📘 Docs](https://shipflow-ai.vercel.app/docs)** · **[🐛 Report an issue](https://github.com/saurabhravte/shipflowAI/issues)**
+
+**Pitch video:** [Add link here]() · **Demo video:** [Add link here]()
 
 </div>
-
-
 
 ---
 
@@ -101,36 +105,36 @@ All transitions are enforced centrally in `apps/web/src/server/workflows/state-m
 
 ## Features
 
-| Area | What ShipFlow does |
-|------|-------------------|
-| **Product discovery** | AI clarifying questions; duplicate-feature education when applicable |
-| **PRD editor** | Structured PRD with problem statement, goals, non-goals, user stories, acceptance criteria, edge cases, success metrics |
-| **Task board** | Kanban columns generated from the PRD; human approves the plan before dev |
-| **GitHub App** | Install app, list repos, receive webhooks, fetch diffs, post review comments |
-| **AI code review** | Reviews PRs against PRD + tasks + diff + repo-aware context (Pinecone retrieval) |
-| **Review loop** | Blocking / non-blocking findings; re-review on new pushes until clean |
-| **Human gates** | PRD approval, task-plan approval, final release approval |
-| **Multi-tenant SaaS** | Workspaces, members, per-workspace projects and billing |
-| **Billing** | Free / Pro / Enterprise plans with usage limits (Razorpay) |
-| **Auth** | Better Auth — email/password, Google, GitHub OAuth |
+| Area                  | What ShipFlow does                                                                                                      |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Product discovery** | AI clarifying questions; duplicate-feature education when applicable                                                    |
+| **PRD editor**        | Structured PRD with problem statement, goals, non-goals, user stories, acceptance criteria, edge cases, success metrics |
+| **Task board**        | Kanban columns generated from the PRD; human approves the plan before dev                                               |
+| **GitHub App**        | Install app, list repos, receive webhooks, fetch diffs, post review comments                                            |
+| **AI code review**    | Reviews PRs against PRD + tasks + diff + repo-aware context (Pinecone retrieval)                                        |
+| **Review loop**       | Blocking / non-blocking findings; re-review on new pushes until clean                                                   |
+| **Human gates**       | PRD approval, task-plan approval, final release approval                                                                |
+| **Multi-tenant SaaS** | Workspaces, members, per-workspace projects and billing                                                                 |
+| **Billing**           | Free / Pro / Enterprise plans with usage limits (Razorpay)                                                              |
+| **Auth**              | Better Auth — email/password, Google, GitHub OAuth                                                                      |
 
 ---
 
 ## Tech stack
 
-| Layer | Technology |
-|-------|------------|
-| **Monorepo** | pnpm workspaces + Turborepo |
-| **Web app** | Next.js 16 (App Router), React 19, Tailwind CSS v4, shadcn/ui |
-| **API** | tRPC v11 + TanStack Query + SuperJSON |
-| **Database** | PostgreSQL + Drizzle ORM (`@shipflow/db`) |
-| **Auth** | Better Auth |
-| **Background jobs** | Inngest (durable step functions) |
-| **GitHub** | Octokit GitHub App + webhooks |
-| **AI** | Vercel AI SDK + OpenRouter (tiered fast / review models) |
-| **Vector search** | Pinecone (repo-aware review context) |
-| **Payments** | Razorpay subscriptions |
-| **Deploy** | Vercel |
+| Layer               | Technology                                                    |
+| ------------------- | ------------------------------------------------------------- |
+| **Monorepo**        | pnpm workspaces + Turborepo                                   |
+| **Web app**         | Next.js 16 (App Router), React 19, Tailwind CSS v4, shadcn/ui |
+| **API**             | tRPC v11 + TanStack Query + SuperJSON                         |
+| **Database**        | PostgreSQL + Drizzle ORM (`@shipflow/db`)                     |
+| **Auth**            | Better Auth                                                   |
+| **Background jobs** | Inngest (durable step functions)                              |
+| **GitHub**          | Octokit GitHub App + webhooks                                 |
+| **AI**              | Vercel AI SDK + OpenRouter (tiered fast / review models)      |
+| **Vector search**   | Pinecone (repo-aware review context)                          |
+| **Payments**        | Razorpay subscriptions                                        |
+| **Deploy**          | Vercel                                                        |
 
 **Typography:** Manrope (display / headings) · Geist (body / UI) · Geist Mono (code, IDs, diffs)
 
@@ -208,18 +212,18 @@ shipflowAI/
 
 ### tRPC routers
 
-| Router | Responsibility |
-|--------|----------------|
-| `workspace` | Workspace CRUD, member management |
-| `project` | Projects within a workspace |
-| `featureRequest` | Intake, clarification, status |
-| `prd` | PRD read/update and approval |
-| `task` | Kanban tasks and plan approval |
-| `github` | App install, repo list, link repo to project |
-| `pullRequest` | PR listing and detail |
-| `review` | AI review runs and findings |
-| `approval` | Human approval gates |
-| `billing` | Plans, usage, Razorpay subscription |
+| Router           | Responsibility                               |
+| ---------------- | -------------------------------------------- |
+| `workspace`      | Workspace CRUD, member management            |
+| `project`        | Projects within a workspace                  |
+| `featureRequest` | Intake, clarification, status                |
+| `prd`            | PRD read/update and approval                 |
+| `task`           | Kanban tasks and plan approval               |
+| `github`         | App install, repo list, link repo to project |
+| `pullRequest`    | PR listing and detail                        |
+| `review`         | AI review runs and findings                  |
+| `approval`       | Human approval gates                         |
+| `billing`        | Plans, usage, Razorpay subscription          |
 
 ---
 
@@ -299,26 +303,26 @@ Use the HTTPS URL as:
 
 Copy `.env.example` to `.env` at the **repository root**.
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `NEXT_PUBLIC_APP_URL` | ✅ | Public app origin, no trailing slash (e.g. `https://shipflow-ai.vercel.app`) |
-| `DATABASE_URL` | ✅ | PostgreSQL connection string |
-| `BETTER_AUTH_SECRET` | ✅ | Session signing secret (`openssl rand -hex 32`) |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | ➖ | Google OAuth (optional social login) |
-| `GITHUB_OAUTH_CLIENT_ID` / `GITHUB_OAUTH_CLIENT_SECRET` | ➖ | GitHub OAuth for **login only** (separate from GitHub App) |
-| `GITHUB_APP_ID` | ✅ | GitHub App ID |
-| `GITHUB_APP_PRIVATE_KEY` | ✅ | GitHub App PEM private key |
-| `GITHUB_APP_WEBHOOK_SECRET` | ✅ | Webhook signature secret |
-| `GITHUB_APP_SLUG` | ✅ | App slug (install URL) |
-| `OPENROUTER_API_KEY` | ✅ | AI inference via OpenRouter |
-| `PINECONE_API_KEY` | ✅ | Vector store for repo-aware reviews |
-| `PINECONE_INDEX` | ✅ | Pinecone index name (1536-dim embeddings) |
-| `INNGEST_EVENT_KEY` | ✅ | Inngest event key |
-| `INNGEST_SIGNING_KEY` | ✅ | Inngest signing key |
-| `INNGEST_DEV` | ➖ | Set `1` when using local Inngest dev server |
-| `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | ➖ | Razorpay API keys |
-| `RAZORPAY_WEBHOOK_SECRET` | ➖ | Razorpay webhook verification |
-| `RAZORPAY_PRO_PLAN_ID` / `RAZORPAY_ENTERPRISE_PLAN_ID` | ➖ | Subscription plan IDs from Razorpay dashboard |
+| Variable                                                | Required | Description                                                                  |
+| ------------------------------------------------------- | -------- | ---------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_APP_URL`                                   | ✅       | Public app origin, no trailing slash (e.g. `https://shipflow-ai.vercel.app`) |
+| `DATABASE_URL`                                          | ✅       | PostgreSQL connection string                                                 |
+| `BETTER_AUTH_SECRET`                                    | ✅       | Session signing secret (`openssl rand -hex 32`)                              |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`             | ➖       | Google OAuth (optional social login)                                         |
+| `GITHUB_OAUTH_CLIENT_ID` / `GITHUB_OAUTH_CLIENT_SECRET` | ➖       | GitHub OAuth for **login only** (separate from GitHub App)                   |
+| `GITHUB_APP_ID`                                         | ✅       | GitHub App ID                                                                |
+| `GITHUB_APP_PRIVATE_KEY`                                | ✅       | GitHub App PEM private key                                                   |
+| `GITHUB_APP_WEBHOOK_SECRET`                             | ✅       | Webhook signature secret                                                     |
+| `GITHUB_APP_SLUG`                                       | ✅       | App slug (install URL)                                                       |
+| `OPENROUTER_API_KEY`                                    | ✅       | AI inference via OpenRouter                                                  |
+| `PINECONE_API_KEY`                                      | ✅       | Vector store for repo-aware reviews                                          |
+| `PINECONE_INDEX`                                        | ✅       | Pinecone index name (1536-dim embeddings)                                    |
+| `INNGEST_EVENT_KEY`                                     | ✅       | Inngest event key                                                            |
+| `INNGEST_SIGNING_KEY`                                   | ✅       | Inngest signing key                                                          |
+| `INNGEST_DEV`                                           | ➖       | Set `1` when using local Inngest dev server                                  |
+| `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET`               | ➖       | Razorpay API keys                                                            |
+| `RAZORPAY_WEBHOOK_SECRET`                               | ➖       | Razorpay webhook verification                                                |
+| `RAZORPAY_PRO_PLAN_ID` / `RAZORPAY_ENTERPRISE_PLAN_ID`  | ➖       | Subscription plan IDs from Razorpay dashboard                                |
 
 **OAuth callback URLs** (replace with your `NEXT_PUBLIC_APP_URL`):
 
@@ -335,22 +339,22 @@ Schema lives in `packages/db/src/schema/`. Migrations in `packages/db/drizzle/`.
 
 ### Domain tables
 
-| Table | Purpose |
-|-------|---------|
-| `user`, `session`, `account`, `verification` | Better Auth |
-| `workspace`, `member` | Multi-tenant organizations |
-| `project` | Projects inside a workspace |
-| `feature_request` | Root of the core loop; authoritative `status` column |
-| `clarifying_exchange` | AI Q&A during clarification phase |
-| `prd` | Structured product requirements document |
-| `task` | Engineering tasks (Kanban) |
-| `approval` | Human approval records (PRD, plan, release) |
-| `github_installation` | GitHub App install per workspace |
-| `repository` | Connected repos; optional `project_id` link |
-| `pull_request` | Tracked PRs from webhooks |
-| `review_run` | One row per AI review execution |
-| `review_finding` | Individual findings (severity, category, file/line) |
-| `subscription`, `usage_record` | Billing plan and monthly usage counters |
+| Table                                        | Purpose                                              |
+| -------------------------------------------- | ---------------------------------------------------- |
+| `user`, `session`, `account`, `verification` | Better Auth                                          |
+| `workspace`, `member`                        | Multi-tenant organizations                           |
+| `project`                                    | Projects inside a workspace                          |
+| `feature_request`                            | Root of the core loop; authoritative `status` column |
+| `clarifying_exchange`                        | AI Q&A during clarification phase                    |
+| `prd`                                        | Structured product requirements document             |
+| `task`                                       | Engineering tasks (Kanban)                           |
+| `approval`                                   | Human approval records (PRD, plan, release)          |
+| `github_installation`                        | GitHub App install per workspace                     |
+| `repository`                                 | Connected repos; optional `project_id` link          |
+| `pull_request`                               | Tracked PRs from webhooks                            |
+| `review_run`                                 | One row per AI review execution                      |
+| `review_finding`                             | Individual findings (severity, category, file/line)  |
+| `subscription`, `usage_record`               | Billing plan and monthly usage counters              |
 
 ### Feature request statuses
 
@@ -413,12 +417,12 @@ Replace `fr_xxxxxxxx` with the feature request ID shown in the dashboard. Webhoo
 
 Handler: `apps/web/src/app/api/inngest/route.ts`
 
-| Function | Trigger event | Steps (summary) |
-|----------|---------------|-----------------|
-| `clarify-feature-request` | `feature_request/clarify` | Load request → AI questions → save exchanges → transition status |
-| `generate-prd` | `feature_request/generate_prd` | Load context → `generateObject` (Zod schema) → save PRD → `prd_review` |
-| `generate-tasks` | `feature_request/generate_tasks` | Load PRD → generate tasks → save to board → `tasks_review` |
-| `review-pull-request` | `github/pull_request.review_requested` | Check usage limit → fetch diff & files → Pinecone retrieval → AI review → post GitHub comments → update findings → transition to `fix_needed` or `human_approval` |
+| Function                  | Trigger event                          | Steps (summary)                                                                                                                                                   |
+| ------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `clarify-feature-request` | `feature_request/clarify`              | Load request → AI questions → save exchanges → transition status                                                                                                  |
+| `generate-prd`            | `feature_request/generate_prd`         | Load context → `generateObject` (Zod schema) → save PRD → `prd_review`                                                                                            |
+| `generate-tasks`          | `feature_request/generate_tasks`       | Load PRD → generate tasks → save to board → `tasks_review`                                                                                                        |
+| `review-pull-request`     | `github/pull_request.review_requested` | Check usage limit → fetch diff & files → Pinecone retrieval → AI review → post GitHub comments → update findings → transition to `fix_needed` or `human_approval` |
 
 Each workflow uses **durable steps** — if the LLM call fails, only that step retries.
 
@@ -452,18 +456,19 @@ review-pull-request function runs (async)
 
 Powered by the **Vercel AI SDK** with **structured outputs** (Zod schemas in `apps/web/src/lib/ai/schemas.ts`).
 
-| Capability | Model tier | Output |
-|------------|------------|--------|
-| Requirement clarification | Fast | Follow-up questions, duplicate detection notes |
-| PRD generation | Fast | Problem statement, goals, non-goals, user stories, acceptance criteria, edge cases, metrics |
-| Task generation | Fast | Kanban-ready engineering tasks with priorities |
-| Code review | Review (stronger) | Findings with severity, category, file/line, rationale, suggestions |
-| Repo context | Embeddings | Pinecone retrieval over indexed file chunks |
+| Capability                | Model tier        | Output                                                                                      |
+| ------------------------- | ----------------- | ------------------------------------------------------------------------------------------- |
+| Requirement clarification | Fast              | Follow-up questions, duplicate detection notes                                              |
+| PRD generation            | Fast              | Problem statement, goals, non-goals, user stories, acceptance criteria, edge cases, metrics |
+| Task generation           | Fast              | Kanban-ready engineering tasks with priorities                                              |
+| Code review               | Review (stronger) | Findings with severity, category, file/line, rationale, suggestions                         |
+| Repo context              | Embeddings        | Pinecone retrieval over indexed file chunks                                                 |
 
 **Model routing** (`apps/web/src/lib/ai/models.ts`):
 
 - **Fast** — PRD, tasks, clarification (`google/gemini-2.5-flash` via OpenRouter)
 - **Review** — code review (`anthropic/claude-sonnet-4.5` via OpenRouter)
+- **Bring your own key** — workspaces can store an encrypted OpenRouter key (Settings → API keys) that overrides the platform default; see [docs/bring-your-own-key](https://shipflow-ai.vercel.app/docs/bring-your-own-key)
 
 Verify model slugs against the [OpenRouter catalog](https://openrouter.ai/models) before deploying.
 
@@ -490,16 +495,16 @@ Findings are categorized as **blocking** or **non-blocking** and posted as GitHu
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start all apps in dev mode |
-| `pnpm build` | Production build (Turborepo) |
-| `pnpm lint` | ESLint across packages |
-| `pnpm check-types` | TypeScript check |
-| `pnpm db:generate` | Generate Drizzle migration |
-| `pnpm db:migrate` | Apply migrations |
-| `pnpm db:studio` | Open Drizzle Studio |
-| `pnpm inngest:dev` | Local Inngest dev server |
+| Command            | Description                  |
+| ------------------ | ---------------------------- |
+| `pnpm dev`         | Start all apps in dev mode   |
+| `pnpm build`       | Production build (Turborepo) |
+| `pnpm lint`        | ESLint across packages       |
+| `pnpm check-types` | TypeScript check             |
+| `pnpm db:generate` | Generate Drizzle migration   |
+| `pnpm db:migrate`  | Apply migrations             |
+| `pnpm db:studio`   | Open Drizzle Studio          |
+| `pnpm inngest:dev` | Local Inngest dev server     |
 
 ---
 
@@ -513,6 +518,6 @@ Built as a hackathon submission demonstrating AI-assisted software delivery with
 
 <div align="center">
 
-If ShipFlow AI helps your team ship faster, **[star the repo](https://github.com/saurabhravte/shipflowAI)** on GitHub.
+⭐ **If ShipFlow AI helps your team ship faster, [star the repo](https://github.com/saurabhravte/shipflowAI) on GitHub.**
 
 </div>
