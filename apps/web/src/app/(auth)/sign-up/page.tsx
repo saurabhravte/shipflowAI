@@ -9,7 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 import { PasswordStrengthMeter } from "@/components/auth/password-strength";
 import { cn } from "@/lib/utils";
@@ -101,7 +107,11 @@ export default function SignUpPage() {
         </div>
 
         {/* Fallback path: custom email/password credential */}
-        <form onSubmit={handleEmailSignUp} className="flex flex-col gap-3" noValidate>
+        <form
+          onSubmit={handleEmailSignUp}
+          className="flex flex-col gap-3"
+          noValidate
+        >
           <Field
             id="name"
             label="Name"
@@ -157,7 +167,10 @@ export default function SignUpPage() {
 
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/sign-in" className="font-medium text-foreground underline">
+          <Link
+            href="/sign-in"
+            className="font-medium text-foreground underline"
+          >
             Sign in
           </Link>
         </p>
@@ -200,9 +213,7 @@ function Field({
         disabled={disabled}
         aria-invalid={!!error}
       />
-      {error && (
-        <p className={cn("text-xs text-destructive")}>{error}</p>
-      )}
+      {error && <p className={cn("text-xs text-destructive")}>{error}</p>}
     </div>
   );
 }

@@ -91,7 +91,7 @@ export default function DashboardOverviewPage() {
             Workspace
           </p>
           <h1 className="font-display text-3xl font-bold tracking-tight">
-            Ship reviewed. Review, instantly.
+            Review instantly.
           </h1>
           <p className="mt-1 max-w-xl text-sm text-muted-foreground">
             Your delivery pipeline — from feature request to merged PR with AI
@@ -173,7 +173,10 @@ export default function DashboardOverviewPage() {
                     <span className="truncate text-sm font-medium">
                       {fr.title}
                     </span>
-                    <Badge variant="outline" className="shrink-0 text-[10px] capitalize">
+                    <Badge
+                      variant="outline"
+                      className="shrink-0 text-[10px] capitalize"
+                    >
                       {fr.status.replace(/_/g, " ")}
                     </Badge>
                   </Link>

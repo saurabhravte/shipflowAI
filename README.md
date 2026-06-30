@@ -4,7 +4,7 @@
 
 # ShipFlow AI
 
-### Ship reviewed. Review, instantly.
+### Review instantly.
 
 **AI-assisted product delivery from feature request to reviewed, approved pull request.**
 

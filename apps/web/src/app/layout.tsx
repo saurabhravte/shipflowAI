@@ -21,15 +21,19 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "ShipFlow AI — Ship reviewed. Review, instantly.",
+    default: "ShipFlow AI — Review instantly.",
     template: "%s · ShipFlow AI",
   },
   description:
-    "Ship reviewed. Review, instantly. ShipFlow AI drives every feature from request to merged PR — AI reviews the code, humans approve the release.",
+    "Review instantly. ShipFlow AI drives every feature from request to merged PR — AI reviews the code, humans approve the release.",
   icons: { icon: "/logo.png" },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
