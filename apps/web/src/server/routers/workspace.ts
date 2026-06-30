@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { workspace, member, subscription, session } from "@shipflow/db";
-import { protectedProcedure, router } from "../trpc/trpc";
+import { workspace, member, subscription, session, account } from "@shipflow/db";
+import { protectedProcedure, workspaceProcedure, router, requireRole } from "../trpc/trpc";
+import { encryptSecret, maskApiKey } from "@/lib/crypto/workspace-secrets";
 
 export const workspaceRouter = router({
   /** All workspaces the signed-in user belongs to, for the workspace switcher. */
@@ -91,4 +92,72 @@ export const workspaceRouter = router({
 
       return { ok: true as const };
     }),
+
+  /** BYOK — whether this workspace has its own OpenRouter key. */
+  apiKeyStatus: workspaceProcedure.query(async ({ ctx }) => {
+    const ws = await ctx.db.query.workspace.findFirst({
+      where: eq(workspace.id, ctx.workspaceId),
+      columns: { openrouterApiKeyEnc: true, openrouterApiKeyHint: true },
+    });
+    const hasWorkspaceKey = !!ws?.openrouterApiKeyEnc;
+    const hasPlatformKey = !!process.env.OPENROUTER_API_KEY;
+    return {
+      configured: hasWorkspaceKey || hasPlatformKey,
+      workspaceKeySet: hasWorkspaceKey,
+      hint: ws?.openrouterApiKeyHint ?? null,
+      source: hasWorkspaceKey ? ("workspace" as const) : hasPlatformKey ? ("platform" as const) : ("none" as const),
+    };
+  }),
+
+  setApiKey: workspaceProcedure
+    .use(requireRole("owner", "admin"))
+    .input(z.object({ apiKey: z.string().min(12, "Enter a valid OpenRouter API key") }))
+    .mutation(async ({ ctx, input }) => {
+      const trimmed = input.apiKey.trim();
+      await ctx.db
+        .update(workspace)
+        .set({
+          openrouterApiKeyEnc: encryptSecret(trimmed),
+          openrouterApiKeyHint: maskApiKey(trimmed),
+        })
+        .where(eq(workspace.id, ctx.workspaceId));
+      return { ok: true as const, hint: maskApiKey(trimmed) };
+    }),
+
+  removeApiKey: workspaceProcedure
+    .use(requireRole("owner", "admin"))
+    .mutation(async ({ ctx }) => {
+      await ctx.db
+        .update(workspace)
+        .set({ openrouterApiKeyEnc: null, openrouterApiKeyHint: null })
+        .where(eq(workspace.id, ctx.workspaceId));
+      return { ok: true as const };
+    }),
+
+  /** Connected OAuth providers + avatar URLs for the signed-in user. */
+  connectedAccounts: protectedProcedure.query(async ({ ctx }) => {
+    const accounts = await ctx.db.query.account.findMany({
+      where: eq(account.userId, ctx.user.id),
+      columns: { providerId: true, accountId: true },
+    });
+
+    return {
+      user: {
+        id: ctx.user.id,
+        name: ctx.user.name,
+        email: ctx.user.email,
+        image: ctx.user.image,
+      },
+      providers: accounts.map((a) => ({
+        provider: a.providerId,
+        accountId: a.accountId,
+        avatarUrl:
+          a.providerId === "github"
+            ? `https://github.com/${a.accountId}.png`
+            : a.providerId === "google"
+              ? ctx.user.image
+              : null,
+      })),
+    };
+  }),
 });

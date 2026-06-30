@@ -1,8 +1,8 @@
 import { generateObject } from "ai";
 import { eq } from "drizzle-orm";
-import { db, prd, task } from "@shipflow/db";
+import { db, prd, task, featureRequest } from "@shipflow/db";
 import { inngest } from "../client";
-import { models } from "@/lib/ai/models";
+import { getModelsForWorkspace } from "@/lib/ai/models";
 import { taskGenerationSchema } from "@/lib/ai/schemas";
 import { taskGenerationPrompt } from "@/lib/ai/prompts";
 import { transitionFeatureRequest } from "@/server/workflows/state-machine";
@@ -22,7 +22,16 @@ export const generateTasks = inngest.createFunction(
       return row;
     });
 
+    const fr = await step.run("load-feature-request", async () => {
+      const row = await db.query.featureRequest.findFirst({
+        where: eq(featureRequest.id, featureRequestId),
+      });
+      if (!row) throw new Error(`FeatureRequest ${featureRequestId} not found`);
+      return row;
+    });
+
     const generated = await step.run("generate-task-list", async () => {
+      const models = await getModelsForWorkspace(fr.workspaceId);
       const { object } = await generateObject({
         model: models.fast,
         schema: taskGenerationSchema,

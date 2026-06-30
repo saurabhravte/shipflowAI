@@ -1,7 +1,7 @@
 import "server-only";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { embedMany, embed } from "ai";
-import { embeddingModel } from "../ai/models";
+import { getModelsForWorkspace } from "../ai/models";
 
 const pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY as string });
 
@@ -54,6 +54,7 @@ export function chunkFileContent(content: string, windowSize = 80, overlap = 10)
  * a crash mid-PR doesn't silently skip files.
  */
 export async function indexFileChunks(params: {
+  workspaceId: string;
   repositoryId: string;
   filePath: string;
   content: string;
@@ -63,8 +64,10 @@ export async function indexFileChunks(params: {
   const chunks = chunkFileContent(params.content);
   if (chunks.length === 0) return;
 
+  const { embedding } = await getModelsForWorkspace(params.workspaceId);
+
   const { embeddings } = await embedMany({
-    model: embeddingModel,
+    model: embedding,
     values: chunks.map((c) => c.text),
   });
 
@@ -90,15 +93,17 @@ export async function indexFileChunks(params: {
  * file currently being reviewed — that content is already in the diff.
  */
 export async function findRelatedChunks(params: {
+  workspaceId: string;
   repositoryId: string;
   queryText: string;
   excludeFilePath?: string;
   topK?: number;
 }) {
-  const { embedding } = await embed({ model: embeddingModel, value: params.queryText });
+  const { embedding } = await getModelsForWorkspace(params.workspaceId);
+  const { embedding: queryVec } = await embed({ model: embedding, value: params.queryText });
 
   const results = await index.namespace(namespaceFor(params.repositoryId)).query({
-    vector: embedding,
+    vector: queryVec,
     topK: params.topK ?? 8,
     includeMetadata: true,
     ...(params.excludeFilePath

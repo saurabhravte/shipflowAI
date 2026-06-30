@@ -2,7 +2,7 @@ import { generateObject } from "ai";
 import { eq } from "drizzle-orm";
 import { db, featureRequest, clarifyingExchange, prd } from "@shipflow/db";
 import { inngest } from "../client";
-import { models } from "@/lib/ai/models";
+import { getModelsForWorkspace } from "@/lib/ai/models";
 import { prdGenerationSchema } from "@/lib/ai/schemas";
 import { prdGenerationPrompt } from "@/lib/ai/prompts";
 import { transitionFeatureRequest } from "@/server/workflows/state-machine";
@@ -51,6 +51,7 @@ export const generatePrd = inngest.createFunction(
     });
 
     const generated = await step.run("generate-prd-content", async () => {
+      const models = await getModelsForWorkspace(fr.workspaceId);
       const { object } = await generateObject({
         model: models.fast,
         schema: prdGenerationSchema,

@@ -10,10 +10,17 @@
       "breakpoints": true
     },
     {
-      "idx": 1,
+      "idx": 2,
       "version": "7",
-      "when": 1782798823935,
-      "tag": "0001_dark_santa_claus",
+      "when": 1782900000000,
+      "tag": "0002_workspace_byok",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782816766425,
+      "tag": "0003_tense_meteorite",
       "breakpoints": true
     }
   ]

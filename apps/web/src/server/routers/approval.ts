@@ -1,11 +1,98 @@
 import { z } from "zod";
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { approval, featureRequest } from "@shipflow/db";
+import {
+  approval,
+  featureRequest,
+  project,
+  repository,
+  pullRequest,
+  prd,
+  task,
+} from "@shipflow/db";
 import { workspaceProcedure, router } from "../trpc/trpc";
 import { transitionFeatureRequest } from "@/server/workflows/state-machine";
 
+const PENDING_STATUSES = ["prd_review", "tasks_review", "human_approval"] as const;
+
 export const approvalRouter = router({
+  /** All items awaiting human action across the workspace. */
+  listPending: workspaceProcedure.query(async ({ ctx }) => {
+    const requests = await ctx.db.query.featureRequest.findMany({
+      where: and(
+        eq(featureRequest.workspaceId, ctx.workspaceId),
+        inArray(featureRequest.status, [...PENDING_STATUSES]),
+      ),
+      orderBy: [desc(featureRequest.updatedAt)],
+      with: { project: true },
+    });
+
+    const projectIds = [...new Set(requests.map((r) => r.projectId))];
+    const repos =
+      projectIds.length > 0
+        ? await ctx.db.query.repository.findMany({
+            where: and(
+              eq(repository.workspaceId, ctx.workspaceId),
+              inArray(repository.projectId, projectIds),
+            ),
+          })
+        : [];
+
+    const reposByProject = new Map(repos.map((r) => [r.projectId!, r]));
+
+    const enriched = await Promise.all(
+      requests.map(async (fr) => {
+        const repo = reposByProject.get(fr.projectId) ?? null;
+        const prs = await ctx.db.query.pullRequest.findMany({
+          where: eq(pullRequest.featureRequestId, fr.id),
+          orderBy: (t, { desc: d }) => d(t.createdAt),
+          limit: 3,
+        });
+        const prdRow = await ctx.db.query.prd.findFirst({
+          where: eq(prd.featureRequestId, fr.id),
+        });
+        const taskCount = await ctx.db.query.task.findMany({
+          where: eq(task.featureRequestId, fr.id),
+          columns: { id: true },
+        });
+
+        const gate =
+          fr.status === "prd_review"
+            ? ("prd" as const)
+            : fr.status === "tasks_review"
+              ? ("tasks" as const)
+              : ("release" as const);
+
+        return {
+          id: fr.id,
+          title: fr.title,
+          status: fr.status,
+          gate,
+          updatedAt: fr.updatedAt,
+          project: fr.project,
+          repository: repo
+            ? {
+                id: repo.id,
+                fullName: repo.fullName,
+                defaultBranch: repo.defaultBranch,
+              }
+            : null,
+          pullRequests: prs.map((p) => ({
+            id: p.id,
+            number: p.number,
+            title: p.title,
+            state: p.state,
+            url: p.url,
+          })),
+          prdReady: !!prdRow,
+          taskCount: taskCount.length,
+        };
+      }),
+    );
+
+    return enriched;
+  }),
+
   listForFeatureRequest: workspaceProcedure
     .input(z.object({ featureRequestId: z.string() }))
     .query(async ({ ctx, input }) => {

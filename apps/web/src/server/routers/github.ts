@@ -7,9 +7,14 @@ import { listInstallationRepositories } from "@/lib/github/tools";
 
 export const githubRouter = router({
   installation: workspaceProcedure.query(async ({ ctx }) => {
-    return ctx.db.query.githubInstallation.findFirst({
+    const row = await ctx.db.query.githubInstallation.findFirst({
       where: eq(githubInstallation.workspaceId, ctx.workspaceId),
     });
+    if (!row) return null;
+    return {
+      ...row,
+      avatarUrl: `https://github.com/${row.accountLogin}.png`,
+    };
   }),
 
   /** Repos visible to the workspace's installation that aren't linked to a project yet, plus already-linked ones. */
@@ -29,12 +34,29 @@ export const githubRouter = router({
 
     return {
       connected: true as const,
+      installation: {
+        ...installation,
+        avatarUrl: `https://github.com/${installation.accountLogin}.png`,
+      },
       repos: ghRepos.map((r) => ({
         ...r,
         linkedRepositoryId: linkedByGithubId.get(r.githubRepoId)?.id ?? null,
         projectId: linkedByGithubId.get(r.githubRepoId)?.projectId ?? null,
       })),
     };
+  }),
+
+  /** All repositories linked to projects in this workspace. */
+  listLinkedRepos: workspaceProcedure.query(async ({ ctx }) => {
+    const repos = await ctx.db.query.repository.findMany({
+      where: eq(repository.workspaceId, ctx.workspaceId),
+      with: { project: true },
+      orderBy: (t, { desc }) => desc(t.updatedAt),
+    });
+    return repos.map((r) => ({
+      ...r,
+      avatarUrl: `https://github.com/${r.owner}.png`,
+    }));
   }),
 
   /** Creates (or re-links) a `repository` row for a GitHub repo and attaches it to a project. */

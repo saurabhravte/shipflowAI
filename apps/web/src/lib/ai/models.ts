@@ -1,27 +1,51 @@
 import "server-only";
+import { eq } from "drizzle-orm";
+import { db, workspace } from "@shipflow/db";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { decryptSecret } from "@/lib/crypto/workspace-secrets";
 
-const openrouter = createOpenRouter({
-  apiKey: process.env.OPENROUTER_API_KEY,
+const FAST_MODEL = "google/gemini-2.5-flash";
+const REVIEW_MODEL = "anthropic/claude-sonnet-4.5";
+const EMBEDDING_MODEL = "openai/text-embedding-3-small";
+
+async function resolveApiKey(workspaceId?: string): Promise<string> {
+  if (workspaceId) {
+    const ws = await db.query.workspace.findFirst({
+      where: eq(workspace.id, workspaceId),
+      columns: { openrouterApiKeyEnc: true },
+    });
+    if (ws?.openrouterApiKeyEnc) {
+      return decryptSecret(ws.openrouterApiKeyEnc);
+    }
+  }
+
+  const envKey = process.env.OPENROUTER_API_KEY;
+  if (!envKey) {
+    throw new Error(
+      "No OpenRouter API key configured. Add one in Settings → API keys or set OPENROUTER_API_KEY.",
+    );
+  }
+  return envKey;
+}
+
+export async function getModelsForWorkspace(workspaceId: string) {
+  const apiKey = await resolveApiKey(workspaceId);
+  const openrouter = createOpenRouter({ apiKey });
+  return {
+    fast: openrouter(FAST_MODEL),
+    review: openrouter(REVIEW_MODEL),
+    embedding: openrouter.textEmbeddingModel(EMBEDDING_MODEL),
+  };
+}
+
+/** Fallback for code paths without a workspace context (uses env key only). */
+const defaultOpenRouter = createOpenRouter({
+  apiKey: process.env.OPENROUTER_API_KEY ?? "",
 });
 
-/**
- * Tiered model routing per ARCHITECTURE.md / the PRD's cost-optimization
- * section: a cheap/fast model for first-pass work, escalate to a stronger
- * model only where it earns its cost. Centralized here so swapping models
- * is a one-line change, not a grep-and-replace across every workflow file.
- *
- * MODEL SLUGS BELOW ARE A STARTING POINT, NOT VERIFIED AGAINST OPENROUTER'S
- * LIVE CATALOG — check https://openrouter.ai/models for current available
- * slugs and pricing before deploying; OpenRouter adds/deprecates models
- * regularly and exact slug strings (version suffixes etc.) do change.
- */
 export const models = {
-  /** PRD generation, task breakdown, clarifying questions — structured but not adversarial. */
-  fast: openrouter("google/gemini-2.5-flash"),
-  /** Code review — needs to actually catch subtle bugs and security issues. */
-  review: openrouter("anthropic/claude-sonnet-4.5"),
+  fast: defaultOpenRouter(FAST_MODEL),
+  review: defaultOpenRouter(REVIEW_MODEL),
 } as const;
 
-/** 1536-dim to match the architecture doc and Pinecone index config. Verify slug on OpenRouter's models page too. */
-export const embeddingModel = openrouter.textEmbeddingModel("openai/text-embedding-3-small");
+export const embeddingModel = defaultOpenRouter.textEmbeddingModel(EMBEDDING_MODEL);

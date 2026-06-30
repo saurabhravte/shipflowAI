@@ -10,7 +10,7 @@ import {
   prd,
 } from "@shipflow/db";
 import { inngest } from "../client";
-import { models } from "@/lib/ai/models";
+import { getModelsForWorkspace } from "@/lib/ai/models";
 import { reviewFindingsSchema } from "@/lib/ai/schemas";
 import { reviewPrompt } from "@/lib/ai/prompts";
 import { transitionFeatureRequest } from "@/server/workflows/state-machine";
@@ -135,6 +135,7 @@ export const reviewPullRequest = inngest.createFunction(
             headSha,
           );
           await indexFileChunks({
+            workspaceId: repo.workspaceId,
             repositoryId,
             filePath: file.path,
             content,
@@ -154,6 +155,7 @@ export const reviewPullRequest = inngest.createFunction(
       const allMatches = await Promise.all(
         queries.map((f) =>
           findRelatedChunks({
+            workspaceId: repo.workspaceId,
             repositoryId,
             queryText: f.path, // file path as a cheap proxy query; richer would be the file's own diff hunk
             excludeFilePath: f.path,
@@ -185,6 +187,7 @@ export const reviewPullRequest = inngest.createFunction(
     });
 
     const reviewResult = await step.run("run-ai-review", async () => {
+      const models = await getModelsForWorkspace(repo.workspaceId);
       const { object } = await generateObject({
         model: models.review,
         schema: reviewFindingsSchema,

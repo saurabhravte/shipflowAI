@@ -406,32 +406,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ───────────────────────── Final CTA ───────────────────────── */}
-      <section className="px-5 py-24 lg:px-8">
-        <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[var(--radius-2xl)] border border-border/70 bg-card/50 px-8 py-16 text-center sm:px-12">
-          <div className="pointer-events-none absolute inset-0 aurora-bg opacity-50" />
-          <div className="relative">
-            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-              Ready to ship{" "}
-              <span className="text-gradient-brand">reviewed?</span>
-            </h2>
-            <p className="mx-auto mt-4 max-w-md text-muted-foreground">
-              Connect GitHub, drop in a feature request, and let ShipFlow run
-              the loop — review, instantly.
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <Link href="/sign-up">
-                  Start free <ArrowRight />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/docs/setup">Setup in 10 min</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+  
 
       {/* ───────────────────────── FAQ ───────────────────────── */}
       <section id="faq" className="scroll-mt-24 border-t border-border/60 bg-card/20 py-24">

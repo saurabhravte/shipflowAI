@@ -71,7 +71,10 @@ export const workspace = pgTable("workspace", {
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   logoUrl: text("logo_url"),
-  /** Set once a GitHub App installation is connected — see github.ts schema. */
+  /** AES-encrypted OpenRouter key for BYOK — see lib/crypto/workspace-secrets.ts */
+  openrouterApiKeyEnc: text("openrouter_api_key_enc"),
+  /** Masked hint shown in UI, e.g. sk-or-…x7Kp */
+  openrouterApiKeyHint: text("openrouter_api_key_hint"),
   ...timestamps,
 });
 
