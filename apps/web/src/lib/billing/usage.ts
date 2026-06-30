@@ -112,6 +112,32 @@ export async function incrementUsage(
     .where(and(eq(usageRecord.workspaceId, workspaceId), eq(usageRecord.periodKey, periodKey)));
 }
 
+export async function getLinkedRepositoryCount(workspaceId: string): Promise<number> {
+  const [row] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(repository)
+    .where(eq(repository.workspaceId, workspaceId));
+  return row?.count ?? 0;
+}
+
+export class RepositoryLimitExceededError extends Error {
+  constructor(public readonly limit: number) {
+    super(`Repository limit reached (${limit} on your plan). Upgrade to link more repos.`);
+    this.name = "RepositoryLimitExceededError";
+  }
+}
+
+export async function assertRepositoryLimit(workspaceId: string) {
+  const plan = await getPlanKey(workspaceId);
+  const limit = PLANS[plan].limits.repositories;
+  if (limit === -1) return;
+
+  const count = await getLinkedRepositoryCount(workspaceId);
+  if (count >= limit) {
+    throw new RepositoryLimitExceededError(limit);
+  }
+}
+
 export async function getUsageSnapshot(workspaceId: string) {
   const plan = await getPlanKey(workspaceId);
   const limits = PLANS[plan].limits;

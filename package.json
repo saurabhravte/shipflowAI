@@ -9,7 +9,9 @@
     "db:generate": "pnpm --filter @shipflow/db db:generate",
     "db:migrate": "pnpm --filter @shipflow/db db:migrate",
     "db:studio": "pnpm --filter @shipflow/db db:studio",
-    "inngest:dev": "npx inngest-cli@latest dev"
+    "inngest:dev": "npx inngest-cli@latest dev",
+    "test": "pnpm --filter @shipflow/web test",
+    "test:e2e": "pnpm --filter @shipflow/web test:e2e"
   },
   "devDependencies": {
     "dotenv": "^17.4.2",

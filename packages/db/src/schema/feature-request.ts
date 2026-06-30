@@ -48,6 +48,11 @@ export const featureRequest = pgTable("feature_request", {
    * "this may already exist" notice but the human can still choose to proceed.
    */
   duplicateOfNote: text("duplicate_of_note"),
+  /**
+   * Set when an async workflow (PRD gen, etc.) fails or hits a plan limit.
+   * Cleared on retry. Surfaced in the UI as an alert — does not replace `status`.
+   */
+  workflowError: text("workflow_error"),
   ...timestamps,
 });
 

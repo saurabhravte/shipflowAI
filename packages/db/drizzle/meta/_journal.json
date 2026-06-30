@@ -22,6 +22,20 @@
       "when": 1782816766425,
       "tag": "0003_tense_meteorite",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783000000000,
+      "tag": "0004_workflow_error",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1782836887770,
+      "tag": "0005_zippy_venom",
+      "breakpoints": true
     }
   ]
 }

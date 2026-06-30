@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ArrowRight } from "lucide-react";
 import { useTRPC } from "@/lib/trpc";
+import { ShipFlowTagHelper } from "@/components/shipflow-tag-helper";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -32,9 +33,13 @@ const PRIORITY_VARIANT = {
 export function TaskBoardPanel({
   featureRequestId,
   canApprovePlan,
+  featureTitle,
+  repository,
 }: {
   featureRequestId: string;
   canApprovePlan: boolean;
+  featureTitle?: string;
+  repository?: { fullName: string; defaultBranch: string } | null;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -64,6 +69,18 @@ export function TaskBoardPanel({
     }),
   );
 
+  const rejectPlan = useMutation(
+    trpc.task.rejectPlan.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: trpc.featureRequest.get.queryKey({ featureRequestId }),
+        });
+        toast.success("Task plan rejected");
+      },
+      onError: (err) => toast.error(err.message),
+    }),
+  );
+
   function nextStatus(current: (typeof COLUMNS)[number]["key"]) {
     const idx = COLUMNS.findIndex((c) => c.key === current);
     return COLUMNS[Math.min(idx + 1, COLUMNS.length - 1)]!.key;
@@ -80,16 +97,33 @@ export function TaskBoardPanel({
             </CardDescription>
           </div>
           {canApprovePlan && (
-            <Button
-              onClick={() => approvePlan.mutate({ featureRequestId })}
-              disabled={approvePlan.isPending}
-            >
-              {approvePlan.isPending ? "Approving…" : "Approve plan"}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                className="text-destructive hover:text-destructive"
+                disabled={rejectPlan.isPending}
+                onClick={() => rejectPlan.mutate({ featureRequestId })}
+              >
+                {rejectPlan.isPending ? "Rejecting…" : "Reject plan"}
+              </Button>
+              <Button
+                onClick={() => approvePlan.mutate({ featureRequestId })}
+                disabled={approvePlan.isPending}
+              >
+                {approvePlan.isPending ? "Approving…" : "Approve plan"}
+              </Button>
+            </div>
           )}
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col gap-6">
+        {(canApprovePlan || repository) && (
+          <ShipFlowTagHelper
+            featureRequestId={featureRequestId}
+            featureTitle={featureTitle}
+            repository={repository}
+          />
+        )}
         {isLoading && (
           <p className="text-sm text-muted-foreground">Loading tasks…</p>
         )}

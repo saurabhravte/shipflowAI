@@ -72,4 +72,24 @@ export const taskRouter = router({
       await transitionFeatureRequest(input.featureRequestId, "in_development");
       return { ok: true as const };
     }),
+
+  /** Human rejects the task plan — feature request is terminated. */
+  rejectPlan: workspaceProcedure
+    .input(
+      z.object({
+        featureRequestId: z.string(),
+        notes: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const fr = await assertFeatureRequestInWorkspace(ctx, input.featureRequestId, ctx.workspaceId);
+      if (fr.status !== "tasks_review") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Cannot reject plan while status is "${fr.status}".`,
+        });
+      }
+      await transitionFeatureRequest(input.featureRequestId, "rejected");
+      return { ok: true as const, notes: input.notes };
+    }),
 });

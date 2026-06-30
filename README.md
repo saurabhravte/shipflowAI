@@ -140,6 +140,8 @@ All transitions are enforced centrally in `apps/web/src/server/workflows/state-m
 
 ## Architecture
 
+Full design reference: **[ARCHITECTURE.md](./ARCHITECTURE.md)** (state machine, Inngest, GitHub, AI agents).
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  Browser — Next.js App Router (apps/web)                        │
@@ -503,6 +505,24 @@ Findings are categorized as **blocking** or **non-blocking** and posted as GitHu
 | `pnpm db:migrate`  | Apply migrations             |
 | `pnpm db:studio`   | Open Drizzle Studio          |
 | `pnpm inngest:dev` | Local Inngest dev server     |
+| `pnpm test`        | Unit + smoke tests           |
+| `pnpm test:e2e`    | Playwright public-page smoke |
+
+---
+
+## Demo walkthrough (for judges)
+
+Follow this script on the [live app](https://shipflow-ai.vercel.app/) or locally:
+
+1. **Sign up** → a default workspace is created automatically.
+2. **Connect GitHub** → Settings → GitHub → install the ShipFlow GitHub App → link a repo to a project.
+3. **Create a feature request** → Projects → pick project → New request → paste a customer ticket or one-liner.
+4. **Clarify** (if prompted) → answer AI follow-ups → PRD generates automatically.
+5. **Approve PRD** → edit fields if needed (including success metrics) → **Approve PRD** (or **Reject PRD** to terminate).
+6. **Approve task plan** → review Kanban columns → **Approve plan** (copy **ShipFlow tag** or **Open PR on GitHub**).
+7. **Open a PR** on GitHub with `ShipFlow: fr_xxx` in the title/body → webhook links it → AI review runs.
+8. **Fix loop** (if blocking findings) → push fixes → re-review until clean.
+9. **Final approval** → Approvals queue or feature detail → **Approve & ship** → status becomes **Shipped** (linked PR merged on GitHub when possible).
 
 ---
 

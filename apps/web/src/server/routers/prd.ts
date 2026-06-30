@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { prd, featureRequest, type Database } from "@shipflow/db";
+import { prd, featureRequest, repository, type Database } from "@shipflow/db";
 import { workspaceProcedure, router } from "../trpc/trpc";
 import { inngest } from "@/server/inngest/client";
 import { transitionFeatureRequest } from "@/server/workflows/state-machine";
@@ -77,5 +77,25 @@ export const prdRouter = router({
       });
 
       return row;
+    }),
+
+  /** Human rejects the PRD — feature request is terminated. */
+  reject: workspaceProcedure
+    .input(
+      z.object({
+        featureRequestId: z.string(),
+        notes: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const fr = await loadPrdScoped(ctx.db, input.featureRequestId, ctx.workspaceId);
+      if (fr.status !== "prd_review") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Cannot reject PRD while status is "${fr.status}".`,
+        });
+      }
+      await transitionFeatureRequest(input.featureRequestId, "rejected");
+      return { ok: true as const, notes: input.notes };
     }),
 });

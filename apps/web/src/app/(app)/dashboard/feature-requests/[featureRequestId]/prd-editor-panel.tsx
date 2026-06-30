@@ -77,9 +77,11 @@ function StringListEditor({
 export function PrdEditorPanel({
   featureRequestId,
   initialPrd,
+  canReject = false,
 }: {
   featureRequestId: string;
   initialPrd: Prd;
+  canReject?: boolean;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -101,6 +103,18 @@ export function PrdEditorPanel({
           queryKey: trpc.featureRequest.get.queryKey({ featureRequestId }),
         });
         toast.success("PRD approved — generating engineering tasks");
+      },
+      onError: (err) => toast.error(err.message),
+    }),
+  );
+
+  const reject = useMutation(
+    trpc.prd.reject.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: trpc.featureRequest.get.queryKey({ featureRequestId }),
+        });
+        toast.success("PRD rejected");
       },
       onError: (err) => toast.error(err.message),
     }),
@@ -230,15 +244,97 @@ export function PrdEditorPanel({
           onChange={(edgeCases) => setPrd({ ...prd, edgeCases })}
           placeholder="A condition the implementation must handle"
         />
+
+        <Separator />
+
+        <div className="flex flex-col gap-2">
+          <Label>Success metrics</Label>
+          {prd.successMetrics.map((m, i) => (
+            <div key={m.id} className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <Input
+                placeholder="Metric (e.g. conversion rate)"
+                value={m.metric}
+                disabled={isApproved}
+                onChange={(e) =>
+                  setPrd({
+                    ...prd,
+                    successMetrics: prd.successMetrics.map((x, idx) =>
+                      idx === i ? { ...x, metric: e.target.value } : x,
+                    ),
+                  })
+                }
+              />
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Target (e.g. +10% within 30 days)"
+                  value={m.target}
+                  disabled={isApproved}
+                  onChange={(e) =>
+                    setPrd({
+                      ...prd,
+                      successMetrics: prd.successMetrics.map((x, idx) =>
+                        idx === i ? { ...x, target: e.target.value } : x,
+                      ),
+                    })
+                  }
+                />
+                {!isApproved && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() =>
+                      setPrd({
+                        ...prd,
+                        successMetrics: prd.successMetrics.filter((_, idx) => idx !== i),
+                      })
+                    }
+                  >
+                    <X className="size-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
+          ))}
+          {!isApproved && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-fit"
+              onClick={() =>
+                setPrd({
+                  ...prd,
+                  successMetrics: [
+                    ...prd.successMetrics,
+                    { id: `sm_${prd.successMetrics.length}`, metric: "", target: "" },
+                  ],
+                })
+              }
+            >
+              <Plus className="size-3.5" /> Add metric
+            </Button>
+          )}
+        </div>
       </CardContent>
       <CardFooter className="flex justify-between gap-2">
-        <Button
-          variant="outline"
-          disabled={isApproved || update.isPending}
-          onClick={() => update.mutate({ featureRequestId, ...prd })}
-        >
-          {update.isPending ? "Saving…" : "Save changes"}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            disabled={isApproved || update.isPending}
+            onClick={() => update.mutate({ featureRequestId, ...prd })}
+          >
+            {update.isPending ? "Saving…" : "Save changes"}
+          </Button>
+          {canReject && !isApproved && (
+            <Button
+              variant="ghost"
+              className="text-destructive hover:text-destructive"
+              disabled={reject.isPending}
+              onClick={() => reject.mutate({ featureRequestId })}
+            >
+              {reject.isPending ? "Rejecting…" : "Reject PRD"}
+            </Button>
+          )}
+        </div>
         <Button
           disabled={isApproved || approve.isPending}
           onClick={() => approve.mutate({ featureRequestId })}

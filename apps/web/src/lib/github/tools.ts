@@ -97,6 +97,42 @@ export type ReviewCommentInput = {
  * decision in this product (Phase 5), the AI review never blocks merge at
  * the GitHub level, only at the ShipFlow state-machine level.
  */
+/** Merge an open pull request (called when a human approves release). */
+export async function mergePullRequest(params: {
+  installationId: number;
+  owner: string;
+  repo: string;
+  pullNumber: number;
+  commitTitle?: string;
+}) {
+  const octokit = await getInstallationOctokit(params.installationId);
+  return octokit.rest.pulls.merge({
+    owner: params.owner,
+    repo: params.repo,
+    pull_number: params.pullNumber,
+    merge_method: "squash",
+    commit_title: params.commitTitle,
+  });
+}
+
+/** Inline review comments for a submitted PR review — used to persist GitHub comment ids. */
+export async function listReviewComments(params: {
+  installationId: number;
+  owner: string;
+  repo: string;
+  pullNumber: number;
+  reviewId: number;
+}) {
+  const octokit = await getInstallationOctokit(params.installationId);
+  return octokit.paginate(octokit.rest.pulls.listCommentsForReview, {
+    owner: params.owner,
+    repo: params.repo,
+    pull_number: params.pullNumber,
+    review_id: params.reviewId,
+    per_page: 100,
+  });
+}
+
 export async function postReview(params: {
   installationId: number;
   owner: string;

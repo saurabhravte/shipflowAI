@@ -33,13 +33,15 @@ export const generatePrd = inngest.createFunction(
     });
 
     if (!withinLimit) {
-      // Leave the feature request in prd_generating with no PRD row — the
-      // UI's "AI is working on this" state would otherwise spin forever, so
-      // surface a clear signal instead. A toast-on-poll pattern in the
-      // frontend (Pass 5) reads this via a dedicated `error` field; for v1,
-      // logging plus leaving status unchanged is the documented gap — see
-      // README "Known gaps" for the follow-up.
-      console.warn(`[generate-prd] usage limit exceeded for workspace ${fr.workspaceId}`);
+      const message =
+        "Monthly PRD generation limit reached on your plan. Upgrade in Billing settings or retry next month.";
+      await step.run("record-usage-limit-error", async () => {
+        await db
+          .update(featureRequest)
+          .set({ workflowError: message })
+          .where(eq(featureRequest.id, featureRequestId));
+        await transitionFeatureRequest(featureRequestId, "draft");
+      });
       return { skipped: true as const, reason: "usage_limit_exceeded" };
     }
 
@@ -95,6 +97,11 @@ export const generatePrd = inngest.createFunction(
             successMetrics: generated.successMetrics.map((m, i) => ({ id: `sm_${i}`, ...m })),
           },
         });
+
+      await db
+        .update(featureRequest)
+        .set({ workflowError: null })
+        .where(eq(featureRequest.id, featureRequestId));
 
       await transitionFeatureRequest(featureRequestId, "prd_review");
       await incrementUsage(fr.workspaceId, "prdGenerationsPerMonth");

@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ExternalLink, ShieldAlert, ShieldCheck, Check, X } from "lucide-react";
 import { useTRPC } from "@/lib/trpc";
+import { ShipFlowTagHelper } from "@/components/shipflow-tag-helper";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -17,8 +18,12 @@ import {
 
 export function PullRequestPanel({
   featureRequestId,
+  repository,
+  featureTitle,
 }: {
   featureRequestId: string;
+  repository?: { fullName: string; defaultBranch: string } | null;
+  featureTitle?: string;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -40,12 +45,12 @@ export function PullRequestPanel({
   if (!pullRequests || pullRequests.length === 0) {
     return (
       <Card className="border-dashed">
-        <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No pull requests linked yet. Open a PR with{" "}
-          <code className="font-data rounded bg-muted px-1.5 py-0.5">
-            ShipFlow: {featureRequestId}
-          </code>{" "}
-          in the title or description to link it automatically.
+        <CardContent className="flex flex-col gap-4 py-6">
+          <ShipFlowTagHelper
+            featureRequestId={featureRequestId}
+            featureTitle={featureTitle}
+            repository={repository}
+          />
         </CardContent>
       </Card>
     );

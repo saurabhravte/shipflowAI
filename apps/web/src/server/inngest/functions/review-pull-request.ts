@@ -14,7 +14,8 @@ import { getModelsForWorkspace } from "@/lib/ai/models";
 import { reviewFindingsSchema } from "@/lib/ai/schemas";
 import { reviewPrompt } from "@/lib/ai/prompts";
 import { transitionFeatureRequest } from "@/server/workflows/state-machine";
-import { getPRDiff, getPRChangedFiles, getFileContent, postReview } from "@/lib/github/tools";
+import { getPRDiff, getPRChangedFiles, getFileContent, postReview, listReviewComments } from "@/lib/github/tools";
+import { getInstallationOctokit } from "@/lib/github/app";
 import { indexFileChunks, findRelatedChunks } from "@/lib/vector/pinecone";
 import { assertWithinLimit, incrementUsage, UsageLimitExceededError } from "@/lib/billing/usage";
 
@@ -58,18 +59,29 @@ export const reviewPullRequest = inngest.createFunction(
     });
 
     if (!withinLimit) {
-      // Don't silently no-op: mark a review_run row as failed so the
-      // workspace can see *why* no review appeared, and post a GitHub
-      // comment so the PR author isn't left guessing either.
+      const limitMessage =
+        "AI review skipped: daily or monthly AI review limit reached on your plan. Upgrade in Billing settings for more reviews.";
       await step.run("record-limit-exceeded", async () => {
         await db.insert(reviewRun).values({
           pullRequestId,
           triggeredBySha: headSha,
           status: "failed",
-          summary: "AI review skipped: daily AI review limit reached (Free plan: 5/day). Upgrade to Pro for unlimited reviews.",
+          summary: limitMessage,
           startedAt: new Date(),
           completedAt: new Date(),
         });
+
+        try {
+          const octokit = await getInstallationOctokit(installationId);
+          await octokit.rest.issues.createComment({
+            owner: repo.owner,
+            repo: repo.name,
+            issue_number: pr.number,
+            body: `**ShipFlow AI**\n\n${limitMessage}`,
+          });
+        } catch (err) {
+          console.warn("[review] failed to post usage-limit comment on PR:", err);
+        }
       });
       return { skipped: true as const, reason: "usage_limit_exceeded" };
     }
@@ -203,30 +215,38 @@ export const reviewPullRequest = inngest.createFunction(
       return object;
     });
 
-    await step.run("persist-findings", async () => {
+    const insertedFindings = await step.run("persist-findings", async () => {
       await db.update(reviewRun).set({
         status: "completed",
         summary: reviewResult.summary,
         completedAt: new Date(),
       }).where(eq(reviewRun.id, run.id));
 
-      if (reviewResult.findings.length > 0) {
-        await db.insert(reviewFinding).values(
-          reviewResult.findings.map((f) => ({
-            reviewRunId: run.id,
-            category: f.category,
-            severity: f.severity,
-            filePath: f.filePath,
-            startLine: f.startLine,
-            endLine: f.endLine,
-            message: f.message,
-            rationale: f.rationale,
-            suggestion: f.suggestion,
-          })),
-        );
+      if (reviewResult.findings.length === 0) {
+        await incrementUsage(repo.workspaceId, "aiReviewsPerMonth");
+        return [] as { id: string; filePath: string | null; startLine: number | null }[];
       }
 
+      const rows = await db.insert(reviewFinding).values(
+        reviewResult.findings.map((f) => ({
+          reviewRunId: run.id,
+          category: f.category,
+          severity: f.severity,
+          filePath: f.filePath,
+          startLine: f.startLine,
+          endLine: f.endLine,
+          message: f.message,
+          rationale: f.rationale,
+          suggestion: f.suggestion,
+        })),
+      ).returning({
+        id: reviewFinding.id,
+        filePath: reviewFinding.filePath,
+        startLine: reviewFinding.startLine,
+      });
+
       await incrementUsage(repo.workspaceId, "aiReviewsPerMonth");
+      return rows;
     });
 
     await step.run("post-github-review", async () => {
@@ -238,7 +258,7 @@ export const reviewPullRequest = inngest.createFunction(
           body: `**[${f.severity === "blocking" ? "🔴 Blocking" : "🟡 Suggestion"} · ${f.category}]**\n\n${f.message}\n\n_Why:_ ${f.rationale}${f.suggestion ? `\n\n**Suggested fix:** ${f.suggestion}` : ""}`,
         }));
 
-      await postReview({
+      const reviewResponse = await postReview({
         installationId,
         owner: repo.owner,
         repo: repo.name,
@@ -247,15 +267,40 @@ export const reviewPullRequest = inngest.createFunction(
         summary: reviewResult.summary,
         comments: inlineComments,
       });
+
+      if (insertedFindings.length > 0 && reviewResponse.data.id) {
+        const ghComments = await listReviewComments({
+          installationId,
+          owner: repo.owner,
+          repo: repo.name,
+          pullNumber: pr.number,
+          reviewId: reviewResponse.data.id,
+        });
+
+        for (const finding of insertedFindings) {
+          if (!finding.filePath || !finding.startLine) continue;
+          const match = ghComments.find(
+            (c) => c.path === finding.filePath && c.line === finding.startLine,
+          );
+          if (match?.id) {
+            await db
+              .update(reviewFinding)
+              .set({ githubCommentId: match.id })
+              .where(eq(reviewFinding.id, finding.id));
+          }
+        }
+      }
     });
 
     const hasBlockingFindings = reviewResult.findings.some((f) => f.severity === "blocking");
+    const readyForHuman =
+      reviewResult.readyForApproval && !hasBlockingFindings;
 
     if (pr.featureRequestId) {
       await step.run("transition-after-review", async () => {
         await transitionFeatureRequest(
           pr.featureRequestId!,
-          hasBlockingFindings ? "fix_needed" : "human_approval",
+          readyForHuman ? "human_approval" : "fix_needed",
         );
       });
     }
@@ -264,6 +309,7 @@ export const reviewPullRequest = inngest.createFunction(
       reviewRunId: run.id,
       findingCount: reviewResult.findings.length,
       hasBlockingFindings,
+      readyForApproval: readyForHuman,
     };
   },
 );

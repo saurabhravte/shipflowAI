@@ -31,7 +31,7 @@ export function ApprovalPanel({ featureRequestId }: { featureRequestId: string }
       <CardHeader>
         <CardTitle>Final approval</CardTitle>
         <CardDescription>
-          Review the PRD, tasks, pull request, and AI review history above, then decide.
+          Review the PRD, tasks, pull request, and AI review history above. Approving ships the feature and merges the linked PR on GitHub when possible.
         </CardDescription>
       </CardHeader>
       <CardContent>

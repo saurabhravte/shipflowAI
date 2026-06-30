@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { featureRequest, project, clarifyingExchange } from "@shipflow/db";
+import { featureRequest, project, clarifyingExchange, repository } from "@shipflow/db";
 import { workspaceProcedure, router } from "../trpc/trpc";
 import { inngest } from "@/server/inngest/client";
 import { transitionFeatureRequest } from "@/server/workflows/state-machine";
@@ -37,7 +37,13 @@ export const featureRequestRouter = router({
         },
       });
       if (!row) throw new TRPCError({ code: "NOT_FOUND" });
-      return row;
+      const linkedRepository = await ctx.db.query.repository.findFirst({
+        where: and(
+          eq(repository.workspaceId, ctx.workspaceId),
+          eq(repository.projectId, row.projectId),
+        ),
+      });
+      return { ...row, linkedRepository: linkedRepository ?? null };
     }),
 
   /** Phase 1 entry point: human submits a raw request, AI clarification kicks off async. */
@@ -108,6 +114,43 @@ export const featureRequestRouter = router({
             ),
           );
       }
+
+      await ctx.db
+        .update(featureRequest)
+        .set({ workflowError: null })
+        .where(eq(featureRequest.id, input.featureRequestId));
+
+      await transitionFeatureRequest(input.featureRequestId, "prd_generating");
+      await inngest.send({
+        name: "feature_request/prd_requested",
+        data: { featureRequestId: input.featureRequestId },
+      });
+
+      return { ok: true as const };
+    }),
+
+  /** Retry PRD generation after a recoverable workflow error (e.g. usage limit). */
+  retryPrdGeneration: workspaceProcedure
+    .input(z.object({ featureRequestId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const fr = await ctx.db.query.featureRequest.findFirst({
+        where: and(
+          eq(featureRequest.id, input.featureRequestId),
+          eq(featureRequest.workspaceId, ctx.workspaceId),
+        ),
+      });
+      if (!fr) throw new TRPCError({ code: "NOT_FOUND" });
+      if (fr.status !== "draft") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "PRD generation can only be retried from draft status.",
+        });
+      }
+
+      await ctx.db
+        .update(featureRequest)
+        .set({ workflowError: null })
+        .where(eq(featureRequest.id, input.featureRequestId));
 
       await transitionFeatureRequest(input.featureRequestId, "prd_generating");
       await inngest.send({

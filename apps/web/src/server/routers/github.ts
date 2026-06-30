@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { githubInstallation, repository, project } from "@shipflow/db";
 import { workspaceProcedure, router } from "../trpc/trpc";
 import { listInstallationRepositories } from "@/lib/github/tools";
+import { assertRepositoryLimit, RepositoryLimitExceededError } from "@/lib/billing/usage";
 
 export const githubRouter = router({
   installation: workspaceProcedure.query(async ({ ctx }) => {
@@ -85,6 +86,24 @@ export const githubRouter = router({
       });
       if (!proj) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Project not found in this workspace." });
+      }
+
+      const existing = await ctx.db.query.repository.findFirst({
+        where: and(
+          eq(repository.workspaceId, ctx.workspaceId),
+          eq(repository.githubRepoId, input.githubRepoId),
+        ),
+      });
+
+      if (!existing) {
+        try {
+          await assertRepositoryLimit(ctx.workspaceId);
+        } catch (err) {
+          if (err instanceof RepositoryLimitExceededError) {
+            throw new TRPCError({ code: "FORBIDDEN", message: err.message });
+          }
+          throw err;
+        }
       }
 
       const [repo] = await ctx.db

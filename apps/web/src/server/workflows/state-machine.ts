@@ -27,7 +27,7 @@ type Status =
 const TRANSITIONS: Record<Status, Status[]> = {
   draft: ["clarifying", "prd_generating"], // straight to PRD if AI judges no clarification needed
   clarifying: ["prd_generating"],
-  prd_generating: ["prd_review"],
+  prd_generating: ["prd_review", "draft"], // draft = recoverable failure (e.g. usage limit)
   prd_review: ["tasks_generating", "rejected"],
   tasks_generating: ["tasks_review"],
   tasks_review: ["in_development", "rejected"],

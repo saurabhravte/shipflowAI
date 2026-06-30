@@ -12,6 +12,7 @@ import {
 } from "@shipflow/db";
 import { workspaceProcedure, router } from "../trpc/trpc";
 import { transitionFeatureRequest } from "@/server/workflows/state-machine";
+import { mergePullRequest } from "@/lib/github/tools";
 
 const PENDING_STATUSES = ["prd_review", "tasks_review", "human_approval"] as const;
 
@@ -147,6 +148,36 @@ export const approvalRouter = router({
 
       if (input.decision === "approved") {
         await transitionFeatureRequest(input.featureRequestId, "shipped");
+
+        // Merge the latest open linked PR on GitHub (best-effort — ship status is authoritative).
+        const openPr = await ctx.db.query.pullRequest.findFirst({
+          where: and(
+            eq(pullRequest.featureRequestId, input.featureRequestId),
+            eq(pullRequest.state, "open"),
+          ),
+          orderBy: (t, { desc }) => desc(t.updatedAt),
+          with: { repository: { with: { installation: true } } },
+        });
+
+        if (openPr?.repository?.installation) {
+          try {
+            const mergeResult = await mergePullRequest({
+              installationId: openPr.repository.installation.installationId,
+              owner: openPr.repository.owner,
+              repo: openPr.repository.name,
+              pullNumber: openPr.number,
+              commitTitle: `Ship: ${fr.title}`,
+            });
+            if (mergeResult.data.merged) {
+              await ctx.db
+                .update(pullRequest)
+                .set({ state: "merged" })
+                .where(eq(pullRequest.id, openPr.id));
+            }
+          } catch (err) {
+            console.warn(`[approval] GitHub merge failed for PR #${openPr.number}:`, err);
+          }
+        }
       } else if (input.sendBackForFixes) {
         await transitionFeatureRequest(input.featureRequestId, "fix_needed");
       } else {
